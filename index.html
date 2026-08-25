@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Explore NPS Schemes — Simulation Portal</title>
+  <link href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #007A63;
+      --primary-light: #1ABFA1;
+      --primary-dark: #005C4A;
+      --primary-tint: #E6F7F3;
+      --primary-foreground: #007A63;
+      --secondary: #121A19;
+      --highlight: #009D80;
+      --success: #2E7D32;
+      --success-light: #C8E6C9;
+      --error: #BA1A1A;
+      --error-light: #FFDAD6;
+      --warning: #E67E22;
+      --warning-light: #FEF3E2;
+      --info: #1565C0;
+      --info-light: #E3F2FD;
+      --text-primary: #121A19;
+      --text-secondary: #3F4746;
+      --text-muted: #6B7271;
+      --text-subtle: #A8ADAC;
+      --bg-default: #F5F6F6;
+      --bg-paper: #FFFFFF;
+      --border-default: #E3E5E4;
+      --border-subtle: #EEF0F0;
+      --border-strong: #C6C9C8;
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-full: 9999px;
+      --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-elevated: 0 4px 12px rgba(0,0,0,0.08), 0 2px 4px rgba(0,0,0,0.04);
+      --shadow-modal: 0 10px 25px rgba(0,0,0,0.12);
+      --font: 'Albert Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      --equity-color: #E80000;
+      --equity-bg: #FEF2F2;
+      --corp-color: #1D4ED8;
+      --corp-bg: #EFF6FF;
+      --govt-color: #B45309;
+      --govt-bg: #FFFBEB;
+      --alt-color: #7C3AED;
+      --alt-bg: #F5F3FF;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: var(--font);
+      background: var(--bg-default);
+      color: var(--text-primary);
+      line-height: 1.5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .page-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 32px 24px 140px;
+    }
+    @media (max-width: 768px) { .page-shell { padding: 20px 16px 160px; } }
+
+    /* Header */
+    .page-title { font-size: 1.5rem; font-weight: 800; color: var(--text-primary); margin-bottom: 4px; }
+    .page-desc { font-size: 0.8125rem; color: var(--text-muted); margin-bottom: 24px; max-width: 600px; }
+
+    /* Step Filter Bar */
+    .step-filter-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      padding: 20px;
+      background: var(--bg-paper);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-card);
+      margin-bottom: 16px;
+    }
+    @media (max-width: 860px) { .step-filter-bar { grid-template-columns: 1fr; } }
+
+    .step-col { display: flex; flex-direction: column; gap: 6px; }
+    .step-header { display: flex; align-items: center; gap: 8px; }
+    .step-num {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.625rem; font-weight: 800; flex-shrink: 0;
+      transition: all 0.2s ease;
+    }
+    .step-num.pending { background: var(--border-subtle); color: var(--text-muted); }
+    .step-num.active { background: var(--primary); color: #fff; }
+    .step-num.completed { background: var(--primary-tint); color: var(--primary); }
+    .step-num.completed::after { content: '✓'; }
+    .step-num.completed span { display: none; }
+
+    .step-lbl { font-size: 0.6875rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.4px; }
+    .step-lbl.active { color: var(--primary); }
+
+    .step-col select {
+      padding: 10px 34px 10px 12px;
+      border: 1.5px solid var(--border-default);
+      border-radius: var(--radius-sm);
+      background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%236B7271'%3E%3Cpath fill-rule='evenodd' d='M5.22 8.22a.75.75 0 011.06 0L10 11.94l3.72-3.72a.75.75 0 111.06 1.06l-4.25 4.25a.75.75 0 01-1.06 0L5.22 9.28a.75.75 0 010-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E") no-repeat right 10px center / 14px;
+      font-family: var(--font); font-size: 0.8125rem; font-weight: 600;
+      color: var(--text-primary); cursor: pointer; appearance: none;
+      transition: border-color 0.15s, box-shadow 0.15s, opacity 0.2s;
+    }
+    .step-col select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,122,99,0.12); }
+    .step-col select:disabled { opacity: 0.45; cursor: not-allowed; background-color: var(--bg-default); }
+
+    /* PFM Metadata Banner */
+    .pfm-banner {
+      display: none; align-items: center; gap: 10px;
+      padding: 12px 16px; margin-bottom: 16px;
+      background: var(--primary-tint); border: 1px solid rgba(0,122,99,0.2); border-radius: var(--radius-md);
+      font-size: 0.8125rem; color: var(--primary-dark);
+    }
+    .pfm-banner.visible { display: flex; }
+    .pfm-banner strong { font-weight: 700; color: var(--primary); }
+
+    /* Active Choice Panel */
+    .active-panel {
+      display: none; padding: 20px; margin-bottom: 16px;
+      background: var(--bg-paper); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
+    }
+    .active-panel.visible { display: block; }
+
+    .active-panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; flex-wrap: wrap; gap: 10px; }
+    .active-panel-title { font-size: 0.875rem; font-weight: 700; color: var(--text-primary); }
+
+    .total-pill {
+      display: none; align-items: center; gap: 5px;
+      padding: 5px 12px; border-radius: var(--radius-full);
+      font-size: 0.75rem; font-weight: 700; transition: all 0.2s;
+    }
+    .total-pill.visible { display: inline-flex; }
+    .total-pill.valid { background: #ECFDF5; color: #047857; }
+    .total-pill.invalid { background: #FEF2F2; color: #BE123C; }
+
+    .slider-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    @media (max-width: 768px) { .slider-row { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .slider-row { grid-template-columns: 1fr; } }
+
+    .sld-item { display: flex; flex-direction: column; gap: 6px; }
+    .sld-top { display: flex; align-items: baseline; justify-content: space-between; }
+    .sld-name { font-size: 0.6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+    .sld-name.eq { color: var(--equity-color); }
+    .sld-name.co { color: var(--corp-color); }
+    .sld-name.go { color: var(--govt-color); }
+    .sld-name.al { color: var(--alt-color); }
+    .sld-val { font-size: 1rem; font-weight: 800; }
+    .sld-val.eq { color: var(--equity-color); }
+    .sld-val.co { color: var(--corp-color); }
+    .sld-val.go { color: var(--govt-color); }
+    .sld-val.al { color: var(--alt-color); }
+    .sld-cap { font-size: 0.5625rem; color: var(--text-muted); }
+
+    .sld-track { height: 6px; background: var(--border-subtle); border-radius: 3px; overflow: hidden; }
+    .sld-fill { height: 100%; border-radius: 3px; transition: width 0.12s; }
+    .sld-fill.eq { background: var(--equity-color); }
+    .sld-fill.co { background: var(--corp-color); }
+    .sld-fill.go { background: var(--govt-color); }
+    .sld-fill.al { background: var(--alt-color); }
+
+    input[type="range"] {
+      width: 100%; height: 6px; appearance: none; background: transparent;
+      cursor: pointer; margin-top: -6px; position: relative;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%;
+      background: #fff; border: 2px solid var(--border-strong);
+      box-shadow: var(--shadow-card); cursor: grab;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover { border-color: var(--primary); }
+
+    .slider-warn {
+      display: none; align-items: center; gap: 6px;
+      margin-top: 10px; padding: 8px 12px;
+      background: #FEF2F2; border: 1px solid #FECACA; border-radius: var(--radius-sm);
+      font-size: 0.6875rem; color: #BE123C;
+    }
+    .slider-warn.visible { display: flex; }
+    .slider-warn svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+    /* Table */
+    .table-wrap {
+      background: var(--bg-paper); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-card);
+      margin-bottom: 16px;
+    }
+    .nps-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+    .nps-table th {
+      padding: 11px 12px; font-size: 0.5625rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border-subtle); text-align: left;
+      background: var(--bg-default); color: var(--text-muted);
+    }
+    .nps-table th.tc { text-align: center; }
+    .nps-table th.col-e { background: var(--equity-bg); color: var(--equity-color); }
+    .nps-table th.col-c { background: var(--corp-bg); color: var(--corp-color); }
+    .nps-table th.col-g { background: var(--govt-bg); color: var(--govt-color); }
+    .nps-table th.col-a { background: var(--alt-bg); color: var(--alt-color); }
+
+    .nps-table td {
+      padding: 13px 12px; font-size: 0.8125rem;
+      border-bottom: 1px solid var(--border-subtle); vertical-align: middle;
+    }
+    .nps-table tbody tr:last-child td { border-bottom: none; }
+    .nps-table tbody tr { cursor: pointer; transition: background 0.12s; }
+    .nps-table tbody tr:hover { background: rgba(0,122,99,0.02); }
+    .nps-table tbody tr.row-selected { background: var(--primary-tint); }
+
+    .row-radio { width: 16px; height: 16px; accent-color: var(--primary); cursor: pointer; }
+
+    .sch-name { font-weight: 700; color: var(--text-primary); font-size: 0.8125rem; }
+    .sch-note { font-size: 0.625rem; color: var(--text-muted); margin-top: 2px; line-height: 1.35; max-width: 240px; }
+    .tc { text-align: center; }
+
+    .risk-pill {
+      display: inline-block; padding: 3px 9px; border-radius: var(--radius-full);
+      font-size: 0.5625rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.2px; white-space: nowrap;
+    }
+    .risk-pill.aggressive { background: #FEE2E2; color: #991B1B; }
+    .risk-pill.balanced { background: var(--warning-light); color: #92400E; }
+    .risk-pill.moderate { background: #DBEAFE; color: #1E40AF; }
+    .risk-pill.conservative { background: #D1FAE5; color: #065F46; }
+    .risk-pill.custom { background: #EDE9FE; color: #5B21B6; }
+    .risk-pill.very-high { background: #FEE2E2; color: #7F1D1D; }
+    .risk-pill.high { background: #FED7AA; color: #9A3412; }
+
+    .val-e { font-weight: 700; color: var(--equity-color); text-align: center; }
+    .val-c { font-weight: 700; color: var(--corp-color); text-align: center; }
+    .val-g { font-weight: 700; color: var(--govt-color); text-align: center; }
+    .val-a { font-weight: 700; color: var(--alt-color); text-align: center; }
+
+    .placeholder-td { padding: 44px 16px; text-align: center; }
+    .ph-inner { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .ph-icon { width: 36px; height: 36px; color: var(--text-subtle); }
+    .ph-text { font-size: 0.8125rem; color: var(--text-muted); max-width: 340px; }
+    .ph-text strong { color: var(--text-secondary); }
+
+    /* Return Simulation */
+    .sim-component {
+      display: none; padding: 20px;
+      background: var(--bg-paper); border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-card);
+    }
+    .sim-component.visible { display: block; }
+    .sim-title { font-size: 0.875rem; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+    .sim-subtitle { font-size: 0.6875rem; color: var(--text-muted); margin-bottom: 16px; }
+
+    .sim-grid { display: grid; grid-template-columns: 1fr 200px; gap: 20px; align-items: end; }
+    @media (max-width: 700px) { .sim-grid { grid-template-columns: 1fr; } }
+
+    .sim-metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .sim-metric { display: flex; flex-direction: column; gap: 2px; }
+    .sim-metric-label { font-size: 0.5625rem; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.3px; }
+    .sim-metric-value { font-size: 1.125rem; font-weight: 800; color: var(--text-primary); }
+    .sim-metric-value.rate { color: var(--primary); }
+    .sim-metric-value.gain { color: var(--success); }
+
+    .sim-chart { display: flex; align-items: flex-end; justify-content: center; gap: 16px; height: 120px; }
+    .chart-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .chart-bar {
+      width: 48px; border-radius: 6px 6px 0 0;
+      transition: height 0.4s ease;
+    }
+    .chart-bar.principal { background: var(--border-default); }
+    .chart-bar.future { background: var(--primary); }
+    .chart-bar-label { font-size: 0.5625rem; font-weight: 600; color: var(--text-muted); white-space: nowrap; }
+    .chart-bar-value { font-size: 0.6875rem; font-weight: 700; color: var(--text-primary); }
+
+    /* Footer */
+    .tx-footer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      background: #fff; border-top: 1px solid var(--border-subtle);
+      box-shadow: 0 -4px 12px rgba(0,0,0,0.06);
+      padding: 14px 24px; z-index: 200;
+      display: none; transition: transform 0.25s ease;
+    }
+    .tx-footer.visible { display: block; animation: slideUp 0.25s ease; }
+    @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+
+    .tx-inner { max-width: 1200px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+    .tx-info {}
+    .tx-scheme { font-size: 0.875rem; font-weight: 700; color: var(--text-primary); }
+    .tx-detail { font-size: 0.6875rem; color: var(--text-muted); }
+    .tx-detail strong { color: var(--text-secondary); font-weight: 600; }
+    .tx-actions { display: flex; gap: 8px; }
+    .btn {
+      padding: 9px 18px; border-radius: var(--radius-sm);
+      font-family: var(--font); font-size: 0.8125rem; font-weight: 700; cursor: pointer; transition: all 0.12s;
+    }
+    .btn-ghost { background: #fff; border: 1.5px solid var(--border-default); color: var(--text-secondary); }
+    .btn-ghost:hover { border-color: var(--border-strong); background: var(--bg-default); }
+    .btn-solid { background: var(--primary); border: 1.5px solid var(--primary); color: #fff; }
+    .btn-solid:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+  </style>
+</head>
+<body>
+
+<div class="page-shell">
+  <h1 class="page-title">Explore NPS Schemes</h1>
+  <p class="page-desc">Configure your NPS investment allocation. Complete the steps below to view scheme options and simulate projected returns.</p>
+
+  <!-- Step Filter Bar -->
+  <div class="step-filter-bar">
+    <div class="step-col">
+      <div class="step-header">
+        <span class="step-num active" id="stepNumAge"><span>1</span></span>
+        <span class="step-lbl active" id="lblAge">Age Group</span>
+      </div>
+      <select id="npsAgeGroup">
+        <option value="">— Select Age Group —</option>
+        <option value="18-25">18–25 (Early Career)</option>
+        <option value="26-35">26–35 (Growth Phase)</option>
+        <option value="36-45">36–45 (Middle Phase)</option>
+        <option value="46-55">46–55 (Pre-Retirement)</option>
+        <option value="55+">55+ (Nearing Retirement)</option>
+      </select>
+    </div>
+    <div class="step-col">
+      <div class="step-header">
+        <span class="step-num pending" id="stepNumScheme"><span>2</span></span>
+        <span class="step-lbl" id="lblScheme">Investment Scheme</span>
+      </div>
+      <select id="npsSchemeFilter" disabled>
+        <option value="">— Complete Step 1 first —</option>
+        <optgroup label="Auto Choice (Lifecycle)">
+          <option value="balanced-default">All Lifecycle Options (Compare)</option>
+          <option value="lc-75">LC-75 (Aggressive)</option>
+          <option value="blc">BLC (Balanced)</option>
+          <option value="lc-50">LC-50 (Moderate)</option>
+          <option value="lc-25">LC-25 (Conservative)</option>
+        </optgroup>
+        <optgroup label="Manual Choice">
+          <option value="active-choice">Active Choice (Custom Allocation)</option>
+        </optgroup>
+        <optgroup label="Multiple Scheme Framework (MSF)">
+          <option value="msf-all">All MSF Options (Compare)</option>
+          <option value="msf-pure-equity">MSF Pure Equity</option>
+          <option value="msf-thematic-growth">MSF Thematic (Alpha Growth)</option>
+          <option value="msf-thematic-esg">MSF Thematic (ESG)</option>
+        </optgroup>
+      </select>
+    </div>
+    <div class="step-col">
+      <div class="step-header">
+        <span class="step-num pending" id="stepNumPfm"><span>3</span></span>
+        <span class="step-lbl" id="lblPfm">Fund Manager</span>
+      </div>
+      <select id="npsFundManager" disabled>
+        <option value="">— Complete Step 2 first —</option>
+        <option value="SBI">SBI Pension Funds</option>
+        <option value="HDFC">HDFC Pension Management</option>
+        <option value="LIC">LIC Pension Fund</option>
+        <option value="ICICI">ICICI Prudential Pension Funds</option>
+        <option value="UTI">UTI Retirement Solutions</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- PFM Info Banner -->
+  <div class="pfm-banner" id="pfmMetadataBanner">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4m0-4h.01"/></svg>
+    <span>Simulating structures managed under: <strong id="activePfmLabel">—</strong></span>
+  </div>
+
+  <!-- Active Choice Panel -->
+  <div class="active-panel" id="activeChoiceControlPanel">
+    <div class="active-panel-header">
+      <div class="active-panel-title">Configure Asset Allocation</div>
+      <div class="total-pill invalid" id="activeTotalBadge">
+        Total: <span id="liveTotalText">0%</span>
+      </div>
+    </div>
+    <div class="slider-row">
+      <div class="sld-item">
+        <div class="sld-top"><span class="sld-name eq">Equity (E)</span><span class="sld-val eq" id="equityValueText">0%</span></div>
+        <div class="sld-cap" id="equityMaxLabel">(Max 75% PFRDA Cap Limit)</div>
+        <div class="sld-track"><div class="sld-fill eq" id="eqFill" style="width:0%"></div></div>
+        <input type="range" id="sliderEquity" min="0" max="75" value="0" />
+      </div>
+      <div class="sld-item">
+        <div class="sld-top"><span class="sld-name co">Corp Debt (C)</span><span class="sld-val co" id="corpValueText">0%</span></div>
+        <div class="sld-cap">(Up to 100%)</div>
+        <div class="sld-track"><div class="sld-fill co" id="coFill" style="width:0%"></div></div>
+        <input type="range" id="sliderCorporate" min="0" max="100" value="0" />
+      </div>
+      <div class="sld-item">
+        <div class="sld-top"><span class="sld-name go">Govt Sec (G)</span><span class="sld-val go" id="govtValueText">0%</span></div>
+        <div class="sld-cap">(Up to 100%)</div>
+        <div class="sld-track"><div class="sld-fill go" id="goFill" style="width:0%"></div></div>
+        <input type="range" id="sliderGovt" min="0" max="100" value="0" />
+      </div>
+      <div class="sld-item">
+        <div class="sld-top"><span class="sld-name al">Alt Assets (A)</span><span class="sld-val al" id="altValueText">0%</span></div>
+        <div class="sld-cap">(Max 5%)</div>
+        <div class="sld-track"><div class="sld-fill al" id="alFill" style="width:0%"></div></div>
+        <input type="range" id="sliderAlternative" min="0" max="5" value="0" />
+      </div>
+    </div>
+    <div class="slider-warn" id="sliderValidationWarning">
+      <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd"/></svg>
+      <span>Allocation must total exactly 100%. Current: <strong id="warnTotalText">0%</strong></span>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-wrap">
+    <table class="nps-table">
+      <thead>
+        <tr>
+          <th style="width:36px"></th>
+          <th style="min-width:180px">Scheme</th>
+          <th class="tc">Risk</th>
+          <th class="tc col-e">Equity (E)</th>
+          <th class="tc col-c">Corp Debt (C)</th>
+          <th class="tc col-g">Govt Sec (G)</th>
+          <th class="tc col-a">Alt (A)</th>
+        </tr>
+      </thead>
+      <tbody id="npsDynamicTableBody">
+        <tr id="tablePlaceholderRow">
+          <td colspan="7" class="placeholder-td">
+            <div class="ph-inner">
+              <svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>
+              <div class="ph-text">Select your <strong>Age Group</strong>, <strong>Investment Scheme</strong>, and <strong>Fund Manager</strong> to generate your allocation simulation.</div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Return Simulation -->
+  <div class="sim-component" id="npsReturnSimulationComponent">
+    <div class="sim-title">10-Year Corpus Projection</div>
+    <div class="sim-subtitle">Based on ₹10,000/month SIP contribution with historical blended return rates.</div>
+    <div class="sim-grid">
+      <div class="sim-metrics">
+        <div class="sim-metric">
+          <div class="sim-metric-label">Blended Rate</div>
+          <div class="sim-metric-value rate" id="simBlendedRateText">—</div>
+        </div>
+        <div class="sim-metric">
+          <div class="sim-metric-label">10Y Future Value</div>
+          <div class="sim-metric-value" id="chartLabelFuture">—</div>
+        </div>
+        <div class="sim-metric">
+          <div class="sim-metric-label">Wealth Gained</div>
+          <div class="sim-metric-value gain" id="simWealthGainedText">—</div>
+        </div>
+      </div>
+      <div class="sim-chart">
+        <div class="chart-col">
+          <div class="chart-bar-value" id="chartLabelPrincipal">₹12.00L</div>
+          <div class="chart-bar principal" id="chartBarPrincipal" style="height:40%"></div>
+          <div class="chart-bar-label">Principal</div>
+        </div>
+        <div class="chart-col">
+          <div class="chart-bar-value" id="chartBarFutureLabel">—</div>
+          <div class="chart-bar future" id="chartBarFuture" style="height:40%"></div>
+          <div class="chart-bar-label">Projected</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Transaction Footer -->
+<div class="tx-footer" id="npsTransactionFooter">
+  <div class="tx-inner">
+    <div class="tx-info">
+      <div class="tx-scheme" id="checkoutSchemeName">—</div>
+      <div class="tx-detail">PFM: <strong id="checkoutPfmName">—</strong> &middot; Allocation: <strong id="checkoutAssetSplit">—</strong></div>
+    </div>
+    <div class="tx-actions">
+      <button class="btn btn-ghost" id="cancelSelectionBtn">Cancel</button>
+      <button class="btn btn-solid" id="proceedToBuyBtn">Proceed to Invest</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ===== DATA MATRICES =====
+const PFRDA = {
+  '18-25': { 'lc-75':{E:75,C:10,G:15,A:0,risk:'Aggressive',note:'Max equity for long-term compounding.'},'blc':{E:50,C:30,G:20,A:0,risk:'Balanced',note:'Flat 50% equity, no reduction until 45.'},'lc-50':{E:50,C:30,G:20,A:0,risk:'Moderate',note:'Default lifecycle. Tapers from age 35.'},'lc-25':{E:25,C:35,G:40,A:0,risk:'Conservative',note:'Safety-first. Heavy govt debt anchoring.'} },
+  '26-35': { 'lc-75':{E:75,C:10,G:15,A:0,risk:'Aggressive',note:'Max equity for long-term compounding.'},'blc':{E:50,C:30,G:20,A:0,risk:'Balanced',note:'Flat 50% equity, no reduction until 45.'},'lc-50':{E:50,C:30,G:20,A:0,risk:'Moderate',note:'Default lifecycle. Tapers from age 35.'},'lc-25':{E:25,C:35,G:40,A:0,risk:'Conservative',note:'Safety-first. Heavy govt debt anchoring.'} },
+  '36-45': { 'lc-75':{E:60,C:15,G:25,A:0,risk:'Aggressive',note:'Equity tapers to 60% post-35.'},'blc':{E:50,C:30,G:20,A:0,risk:'Balanced',note:'Stays flat at 50% equity.'},'lc-50':{E:40,C:25,G:35,A:0,risk:'Moderate',note:'Equity reduced to 40%.'},'lc-25':{E:17,C:30,G:53,A:0,risk:'Conservative',note:'Equity at 17%, heavy govt sec.'} },
+  '46-55': { 'lc-75':{E:30,C:25,G:45,A:0,risk:'Aggressive',note:'Significant cut as retirement nears.'},'blc':{E:42,C:28,G:30,A:0,risk:'Balanced',note:'BLC tapers equity to 42%.'},'lc-50':{E:20,C:20,G:60,A:0,risk:'Moderate',note:'Majority in govt securities.'},'lc-25':{E:9,C:20,G:71,A:0,risk:'Conservative',note:'Minimal equity at 9%.'} },
+  '55+':   { 'lc-75':{E:15,C:10,G:75,A:0,risk:'Aggressive',note:'Terminal: 15% equity at retirement.'},'blc':{E:35,C:25,G:40,A:0,risk:'Balanced',note:'BLC terminal equity at 35%.'},'lc-50':{E:10,C:10,G:80,A:0,risk:'Moderate',note:'80% govt sec for capital protection.'},'lc-25':{E:5,C:5,G:90,A:0,risk:'Conservative',note:'Max safety: 90% govt debt.'} },
+};
+
+const MSF = {
+  'msf-pure-equity': { name:'MSF Pure Equity', E:'100%', C:'0%', G:'0%', A:'0%', risk:'Very High', riskCls:'very-high', note:'100% equity. 15-year vesting lock-in.' },
+  'msf-thematic-growth': { name:'MSF Thematic (Alpha Growth)', E:'Up to 100%', C:'Tactical', G:'Tactical', A:'0%', risk:'High', riskCls:'high', note:'Infra & manufacturing focused thematic.' },
+  'msf-thematic-esg': { name:'MSF Thematic (ESG)', E:'Up to 100%', C:'Tactical', G:'Tactical', A:'0%', risk:'High', riskCls:'high', note:'ESG responsible investment framework.' },
+};
+
+const LABELS = { 'lc-75':'LC-75 (Aggressive)','blc':'BLC (Balanced)','lc-50':'LC-50 (Moderate)','lc-25':'LC-25 (Conservative)' };
+const LC_KEYS = ['lc-75','blc','lc-50','lc-25'];
+const MSF_KEYS = ['msf-pure-equity','msf-thematic-growth','msf-thematic-esg'];
+const EQ_CAPS = { '18-25':{max:75,lbl:'(Max 75% PFRDA Cap Limit)'},'26-35':{max:75,lbl:'(Max 75% PFRDA Cap Limit)'},'36-45':{max:75,lbl:'(Max 75% PFRDA Cap Limit)'},'46-55':{max:60,lbl:'(Tapered Max 60% Cap Limit)'},'55+':{max:50,lbl:'(Defensive Max 50% Cap Limit)'} };
+
+// ===== STATE =====
+const S = { age:'', scheme:'', pfm:'', selectedRowId:null, aE:0, aC:0, aG:0, aA:0 };
+
+// ===== DOM =====
+const $=id=>document.getElementById(id);
+const ageEl=$('npsAgeGroup'), schEl=$('npsSchemeFilter'), pfmEl=$('npsFundManager');
+const tbody=$('npsDynamicTableBody');
+const activePanel=$('activeChoiceControlPanel'), totalBadge=$('activeTotalBadge');
+const simComp=$('npsReturnSimulationComponent');
+const footer=$('npsTransactionFooter');
+const pfmBanner=$('pfmMetadataBanner');
+
+// ===== STEP INDICATORS =====
+function syncSteps(){
+  const s1=$('stepNumAge'),s2=$('stepNumScheme'),s3=$('stepNumPfm');
+  const l1=$('lblAge'),l2=$('lblScheme'),l3=$('lblPfm');
+  s1.className='step-num '+(S.age?'completed':'active');
+  l1.className='step-lbl '+(S.age?'':'active');
+  s2.className='step-num '+(S.scheme?'completed':S.age?'active':'pending');
+  l2.className='step-lbl '+(S.scheme?'':S.age?'active':'');
+  s3.className='step-num '+(S.pfm?'completed':S.scheme?'active':'pending');
+  l3.className='step-lbl '+(S.pfm?'':S.scheme?'active':'');
+}
+
+function validateLocks(){
+  schEl.disabled=!S.age;
+  if(!S.age){schEl.value='';S.scheme='';}
+  pfmEl.disabled=!S.scheme;
+  if(!S.scheme){pfmEl.value='';S.pfm='';}
+  syncSteps();
+}
+
+// ===== SIMULATION ENGINE =====
+function runSimulation(E,C,G,A){
+  // Convert string values to numbers for MSF/thematic (proxy: "Up to 100%" -> 85E,15G)
+  let eN=typeof E==='string'?(E.includes('100')?85:parseFloat(E)||0):E;
+  let cN=typeof C==='string'?(C==='Tactical'?0:parseFloat(C)||0):C;
+  let gN=typeof G==='string'?(G==='Tactical'?15:parseFloat(G)||0):G;
+  let aN=typeof A==='string'?parseFloat(A)||0:A;
+  let total=eN+cN+gN+aN; if(total===0) total=100;
+  let ew=eN/100, cw=cN/100, gw=gN/100, aw=aN/100;
+
+  const rate = (ew*0.12)+(cw*0.085)+(gw*0.075)+(aw*0.09);
+  const PMT=10000, n=120, rm=rate/12;
+  const FV = PMT * (((Math.pow(1+rm,n))-1)/rm) * (1+rm);
+  const principal=1200000;
+  const gain=FV-principal;
+
+  $('simBlendedRateText').textContent=(rate*100).toFixed(2)+'% p.a.';
+  $('chartLabelFuture').textContent='₹'+(FV/100000).toFixed(2)+'L';
+  $('chartBarFutureLabel').textContent='₹'+(FV/100000).toFixed(2)+'L';
+  $('simWealthGainedText').textContent='+₹'+(gain/100000).toFixed(2)+'L';
+  $('chartLabelPrincipal').textContent='₹12.00L';
+
+  const barH=Math.min(100, 40*(FV/principal));
+  $('chartBarPrincipal').style.height='40%';
+  $('chartBarFuture').style.height=barH+'%';
+
+  simComp.classList.add('visible');
+}
+
+function hideSim(){ simComp.classList.remove('visible'); }
+
+// ===== FOOTER =====
+function showFooter(name, split){
+  if(!S.pfm) return; // LOCK: PFM must be selected
+  $('checkoutSchemeName').textContent=name;
+  $('checkoutPfmName').textContent=pfmEl.options[pfmEl.selectedIndex]?.text||S.pfm;
+  $('checkoutAssetSplit').textContent=split;
+  footer.classList.add('visible');
+}
+function hideFooter(){ footer.classList.remove('visible'); }
+
+// ===== ROW SELECTION =====
+function selectRow(rowId, name, E, C, G, A){
+  S.selectedRowId=rowId;
+  // Update visual
+  tbody.querySelectorAll('tr').forEach(tr=>{
+    tr.classList.remove('row-selected');
+    const r=tr.querySelector('.row-radio'); if(r) r.checked=false;
+  });
+  const tr=document.querySelector(`[data-row-id="${rowId}"]`);
+  if(tr){ tr.classList.add('row-selected'); const r=tr.querySelector('.row-radio'); if(r) r.checked=true; }
+
+  // Run simulation
+  runSimulation(E,C,G,A);
+  // Show footer if PFM selected
+  const split=`E: ${E}${typeof E==='number'?'%':''} | C: ${C}${typeof C==='number'?'%':''} | G: ${G}${typeof G==='number'?'%':''} | A: ${A}${typeof A==='number'?'%':''}`;
+  showFooter(name, split);
+}
+window.selectRow=selectRow;
+
+// ===== RENDER =====
+function renderPlaceholder(){
+  tbody.innerHTML=`<tr id="tablePlaceholderRow"><td colspan="7" class="placeholder-td"><div class="ph-inner"><svg class="ph-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg><div class="ph-text">Select your <strong>Age Group</strong>, <strong>Investment Scheme</strong>, and <strong>Fund Manager</strong> to generate your allocation simulation.</div></div></td></tr>`;
+}
+
+function riskCls(r){ return{Aggressive:'aggressive',Balanced:'balanced',Moderate:'moderate',Conservative:'conservative',Custom:'custom','Very High':'very-high',High:'high'}[r]||'moderate'; }
+
+function buildAutoRows(preselect){
+  const age=PFRDA[S.age]; if(!age) return '';
+  return LC_KEYS.map(k=>{
+    const d=age[k]; const sel=preselect===k;
+    return `<tr data-row-id="${k}" class="${sel?'row-selected':''}" onclick="selectRow('${k}','${LABELS[k]}',${d.E},${d.C},${d.G},${d.A})">
+      <td class="tc"><input type="radio" name="schRow" class="row-radio" ${sel?'checked':''}/></td>
+      <td><div class="sch-name">${LABELS[k]}</div><div class="sch-note">${d.note}</div></td>
+      <td class="tc"><span class="risk-pill ${riskCls(d.risk)}">${d.risk}</span></td>
+      <td class="val-e">${d.E}%</td><td class="val-c">${d.C}%</td><td class="val-g">${d.G}%</td><td class="val-a">${d.A>0?d.A+'%':'—'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function buildMSFRows(preselect){
+  return MSF_KEYS.map(k=>{
+    const m=MSF[k]; const sel=preselect===k;
+    return `<tr data-row-id="${k}" class="${sel?'row-selected':''}" onclick="selectRow('${k}','${m.name}','${m.E}','${m.C}','${m.G}','${m.A}')">
+      <td class="tc"><input type="radio" name="schRow" class="row-radio" ${sel?'checked':''}/></td>
+      <td><div class="sch-name">${m.name}</div><div class="sch-note">${m.note}</div></td>
+      <td class="tc"><span class="risk-pill ${m.riskCls}">${m.risk}</span></td>
+      <td class="val-e">${m.E}</td><td class="val-c">${m.C}</td><td class="val-g">${m.G}</td><td class="val-a">${m.A}</td>
+    </tr>`;
+  }).join('');
+}
+
+function buildActiveRow(){
+  return `<tr data-row-id="active-choice" class="row-selected" id="activeChoiceTableTr">
+    <td class="tc"><input type="radio" name="schRow" class="row-radio" checked/></td>
+    <td><div class="sch-name">Active Choice (Custom)</div><div class="sch-note">Adjust sliders above. Total must = 100%.</div></td>
+    <td class="tc"><span class="risk-pill custom">Custom</span></td>
+    <td class="val-e" id="tableCellEquity">${S.aE}%</td>
+    <td class="val-c" id="tableCellCorp">${S.aC}%</td>
+    <td class="val-g" id="tableCellGovt">${S.aG}%</td>
+    <td class="val-a" id="tableCellAlt">${S.aA}%</td>
+  </tr>`;
+}
+
+function render(){
+  activePanel.classList.remove('visible');
+  totalBadge.classList.remove('visible');
+  hideFooter();
+  hideSim();
+  S.selectedRowId=null;
+
+  if(!S.age || !S.scheme){
+    renderPlaceholder();
+    return;
+  }
+
+  const sch=S.scheme;
+
+  // AUTO CHOICE group
+  if(sch==='balanced-default'||LC_KEYS.includes(sch)){
+    const preselect = sch==='balanced-default' ? null : sch;
+    tbody.innerHTML = buildAutoRows(preselect);
+    // If preselected, run sim
+    if(preselect && PFRDA[S.age]?.[preselect]){
+      const d=PFRDA[S.age][preselect];
+      runSimulation(d.E,d.C,d.G,d.A);
+      if(S.pfm) showFooter(LABELS[preselect],`E: ${d.E}% | C: ${d.C}% | G: ${d.G}% | A: ${d.A}%`);
+    }
+    return;
+  }
+
+  // MSF group
+  if(sch==='msf-all'||MSF_KEYS.includes(sch)){
+    const preselect = sch==='msf-all' ? null : sch;
+    tbody.innerHTML = buildMSFRows(preselect);
+    if(preselect && MSF[preselect]){
+      const m=MSF[preselect];
+      runSimulation(m.E,m.C,m.G,m.A);
+      if(S.pfm) showFooter(m.name,`E: ${m.E} | C: ${m.C} | G: ${m.G} | A: ${m.A}`);
+    }
+    return;
+  }
+
+  // ACTIVE CHOICE
+  if(sch==='active-choice'){
+    activePanel.classList.add('visible');
+    totalBadge.classList.add('visible');
+    applyEquityCap();
+    tbody.innerHTML = buildActiveRow();
+    syncSliders();
+    return;
+  }
+
+  renderPlaceholder();
+}
+
+// ===== ACTIVE CHOICE SLIDERS =====
+const sE=$('sliderEquity'), sC=$('sliderCorporate'), sG=$('sliderGovt'), sA=$('sliderAlternative');
+
+function applyEquityCap(){
+  const cap=EQ_CAPS[S.age]||{max:75,lbl:'(Max 75% PFRDA Cap Limit)'};
+  sE.max=cap.max;
+  $('equityMaxLabel').textContent=cap.lbl;
+  if(S.aE>cap.max){ S.aE=cap.max; sE.value=cap.max; }
+}
+
+function syncSliders(){
+  $('equityValueText').textContent=S.aE+'%';
+  $('corpValueText').textContent=S.aC+'%';
+  $('govtValueText').textContent=S.aG+'%';
+  $('altValueText').textContent=S.aA+'%';
+  $('eqFill').style.width=(S.aE/parseInt(sE.max))*100+'%';
+  $('coFill').style.width=S.aC+'%';
+  $('goFill').style.width=S.aG+'%';
+  $('alFill').style.width=(S.aA/5)*100+'%';
+
+  const total=S.aE+S.aC+S.aG+S.aA;
+  $('liveTotalText').textContent=total+'%';
+  $('warnTotalText').textContent=total+'%';
+
+  // Table cells
+  const ce=$('tableCellEquity'),cc=$('tableCellCorp'),cg=$('tableCellGovt'),ca=$('tableCellAlt');
+  if(ce) ce.textContent=S.aE+'%';
+  if(cc) cc.textContent=S.aC+'%';
+  if(cg) cg.textContent=S.aG+'%';
+  if(ca) ca.textContent=S.aA+'%';
+
+  if(total===100){
+    totalBadge.className='total-pill visible valid';
+    $('sliderValidationWarning').classList.remove('visible');
+    runSimulation(S.aE,S.aC,S.aG,S.aA);
+    if(S.pfm) showFooter('Active Choice (Custom)',`E: ${S.aE}% | C: ${S.aC}% | G: ${S.aG}% | A: ${S.aA}%`);
+  } else {
+    totalBadge.className='total-pill visible invalid';
+    $('sliderValidationWarning').classList.add('visible');
+    hideFooter();
+    hideSim();
+  }
+}
+
+sE.addEventListener('input',e=>{S.aE=+e.target.value; syncSliders();});
+sC.addEventListener('input',e=>{S.aC=+e.target.value; syncSliders();});
+sG.addEventListener('input',e=>{S.aG=+e.target.value; syncSliders();});
+sA.addEventListener('input',e=>{S.aA=+e.target.value; syncSliders();});
+
+// ===== EVENT LISTENERS =====
+ageEl.addEventListener('change',e=>{
+  S.age=e.target.value;
+  S.aE=0;S.aC=0;S.aG=0;S.aA=0;
+  sE.value=0;sC.value=0;sG.value=0;sA.value=0;
+  validateLocks();
+  render();
+});
+
+schEl.addEventListener('change',e=>{
+  S.scheme=e.target.value;
+  S.selectedRowId=null;
+  validateLocks();
+  render();
+});
+
+pfmEl.addEventListener('change',e=>{
+  S.pfm=e.target.value;
+  syncSteps();
+  // Sync PFM banner
+  if(S.pfm){
+    $('activePfmLabel').textContent=pfmEl.options[pfmEl.selectedIndex].text;
+    pfmBanner.classList.add('visible');
+  } else {
+    pfmBanner.classList.remove('visible');
+  }
+  // Re-evaluate footer visibility
+  if(S.selectedRowId && S.pfm){
+    // Reconstruct footer based on current selection
+    const row=document.querySelector(`[data-row-id="${S.selectedRowId}"]`);
+    if(row) row.click();
+  } else if(S.scheme==='active-choice'){
+    syncSliders(); // re-eval
+  } else {
+    hideFooter();
+  }
+});
+
+// Footer buttons
+$('cancelSelectionBtn').addEventListener('click',()=>{
+  S.age='';S.scheme='';S.pfm='';S.selectedRowId=null;
+  S.aE=0;S.aC=0;S.aG=0;S.aA=0;
+  ageEl.value='';schEl.value='';pfmEl.value='';
+  sE.value=0;sC.value=0;sG.value=0;sA.value=0;
+  pfmBanner.classList.remove('visible');
+  validateLocks();render();
+});
+
+$('proceedToBuyBtn').addEventListener('click',()=>{
+  const payload={
+    ageGroup:S.age, scheme:S.scheme, pfm:S.pfm, selectedRow:S.selectedRowId,
+    allocation: S.scheme==='active-choice'
+      ? {E:S.aE,C:S.aC,G:S.aG,A:S.aA}
+      : (PFRDA[S.age]?.[S.selectedRowId] || MSF[S.selectedRowId] || null),
+  };
+  console.log('[NPS Checkout Payload]', payload);
+  alert('Checkout payload dispatched. See console for details.');
+});
+
+// ===== INIT =====
+validateLocks();
+render();
+</script>
+
+</body>
+</html>
