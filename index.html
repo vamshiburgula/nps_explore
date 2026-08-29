@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Explore NPS Schemes — Simulation Portal</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <!-- Step 5: lightweight charting engine (additive) -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
     :root {
       --primary: #0F766E;
@@ -235,6 +237,88 @@
     .btn-p{padding:8px 18px;border-radius:var(--r-sm);background:var(--primary);border:1.5px solid var(--primary);font-family:var(--font);font-size:0.6875rem;font-weight:700;color:#fff;cursor:pointer;transition:all 0.2s var(--ease);}
     .btn-p:hover{background:var(--primary-h);border-color:var(--primary-h);transform:translateY(-1px);box-shadow:var(--sh-md);}
     .btn-p:disabled{opacity:0.35;pointer-events:none;}
+
+    /* ============================================================
+       STEP 5 — DYNAMIC SCHEME INSIGHTS (fully additive, scoped)
+       All classes prefixed .s5- to avoid any collision.
+       ============================================================ */
+    .s5-wrap{opacity:0;max-height:0;overflow:hidden;transition:opacity 0.3s var(--ease),max-height 0.35s var(--ease);margin-top:6px;}
+    .s5-wrap.s5-open{opacity:1;max-height:9000px;overflow:visible;margin-bottom:20px;}
+    .s5-head{display:flex;align-items:center;gap:10px;margin:26px 0 6px;}
+    .s5-badge{padding:5px 12px;border-radius:var(--r-full);font-size:0.6875rem;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;background:var(--primary);color:#fff;box-shadow:0 2px 8px var(--primary-ring);white-space:nowrap;}
+    .s5-head h2{font-size:1.05rem;font-weight:800;letter-spacing:-0.01em;}
+    .s5-head p{font-size:0.75rem;color:var(--text-s);}
+    .s5-line{flex:1;height:1px;background:var(--border);}
+
+    .s5-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:18px;margin-bottom:16px;}
+    .s5-card-h{margin-bottom:12px;}
+    .s5-card-t{font-size:0.875rem;font-weight:700;display:flex;align-items:center;gap:6px;}
+    .s5-card-s{font-size:0.6875rem;color:var(--text-m);margin-top:2px;}
+
+    /* 5.1 chart controls */
+    .s5-tabs{display:flex;gap:6px;flex-wrap:wrap;margin:2px 0 14px;}
+    .s5-tab{padding:6px 14px;border-radius:var(--r-full);border:1.5px solid var(--border);background:var(--card);font-family:var(--font);font-size:0.6875rem;font-weight:700;color:var(--text-s);cursor:pointer;transition:all 0.3s ease-in-out;}
+    .s5-tab:hover{border-color:var(--primary-h);color:var(--primary);}
+    .s5-tab.s5-on{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:0 2px 8px var(--primary-ring);}
+    .s5-legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:10px;}
+    .s5-leg{display:flex;align-items:center;gap:6px;font-size:0.6875rem;font-weight:600;color:var(--text-s);}
+    .s5-dot{width:11px;height:11px;border-radius:50%;flex-shrink:0;}
+    .s5-dot.s5-green{background:#16A34A;}
+    .s5-chart-box{position:relative;width:100%;height:280px;}
+    @media(max-width:600px){.s5-chart-box{height:220px;}}
+
+    /* 5.1.3 returns commentary + grid */
+    .s5-note{font-size:0.75rem;color:var(--text-s);line-height:1.55;background:var(--primary-tint);border:1px solid var(--primary-sub);border-radius:var(--r-sm);padding:11px 14px;margin:16px 0 12px;}
+    .s5-tbl{width:100%;border-collapse:collapse;}
+    .s5-tbl th{padding:8px 12px;font-size:0.5625rem;font-weight:800;text-transform:uppercase;letter-spacing:0.4px;text-align:left;background:var(--bg);color:var(--text-m);border-bottom:1px solid var(--border);}
+    .s5-tbl th.s5-ctr,.s5-tbl td.s5-ctr{text-align:center;}
+    .s5-tbl td{padding:9px 12px;font-size:0.8125rem;border-bottom:1px solid var(--border-l);}
+    .s5-tbl tr:last-child td{border-bottom:none;}
+    .s5-tbl tbody tr{transition:background 0.3s ease-in-out;}
+    .s5-tbl tbody tr:hover{background:var(--primary-tint);}
+    .s5-tbl .s5-hz{font-weight:700;}
+    .s5-tbl .s5-lump{font-weight:800;color:var(--success);}
+    .s5-tbl .s5-sip{font-weight:700;color:var(--accent);}
+
+    /* 5.2 asset allocation */
+    .s5-code{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:6px;font-size:0.75rem;font-weight:900;color:#fff;}
+    .s5-code.s5-g{background:var(--go);}
+    .s5-code.s5-c{background:var(--co);}
+    .s5-code.s5-e{background:var(--eq);}
+    .s5-pct{font-weight:800;}
+    .s5-abar{display:flex;height:8px;border-radius:4px;overflow:hidden;margin-top:12px;}
+    .s5-abar span{transition:width 0.35s ease-in-out;}
+
+    /* 5.3 donut layout */
+    .s5-donut-grid{display:grid;grid-template-columns:minmax(0,320px) 1fr;gap:20px;align-items:center;}
+    @media(max-width:720px){.s5-donut-grid{grid-template-columns:1fr;}}
+    .s5-donut-box{position:relative;width:100%;max-width:300px;margin:0 auto;aspect-ratio:1/1;}
+    .s5-donut-svg{width:100%;height:100%;transform:rotate(-90deg);}
+    .s5-arc{cursor:pointer;transition:transform 0.3s ease-in-out,opacity 0.3s ease-in-out;transform-origin:center;transform-box:fill-box;}
+    .s5-arc:hover{opacity:0.88;}
+    .s5-arc.s5-pop{transform:scale(1.06);}
+    .s5-arc.s5-dim{opacity:0.32;}
+    .s5-center{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center;width:58%;pointer-events:none;}
+    .s5-center-lbl{font-size:0.625rem;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-m);}
+    .s5-center-nm{font-size:0.9375rem;font-weight:800;line-height:1.2;margin:2px 0;transition:all 0.3s ease-in-out;}
+    .s5-center-pct{font-size:1.5rem;font-weight:900;transition:all 0.3s ease-in-out;}
+    .s5-sectors{display:flex;flex-direction:column;gap:2px;}
+    .s5-sec{display:flex;align-items:center;gap:10px;padding:7px 10px;border-radius:var(--r-sm);cursor:pointer;transition:all 0.3s ease-in-out;border:1px solid transparent;}
+    .s5-sec:hover{background:var(--bg);}
+    .s5-sec.s5-active{background:var(--primary-tint);border-color:var(--primary-sub);transform:translateX(3px);}
+    .s5-sec.s5-faded{opacity:0.4;}
+    .s5-sec-dot{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+    .s5-sec-nm{font-size:0.75rem;font-weight:600;flex:1;}
+    .s5-sec-pct{font-size:0.75rem;font-weight:800;color:var(--text-s);}
+
+    /* 5.4 peer matrix */
+    .s5-peer td{font-size:0.8125rem;}
+    .s5-peer .s5-num{text-align:right;font-weight:700;font-variant-numeric:tabular-nums;}
+    .s5-peer tbody tr.s5-self{background:var(--primary-tint);}
+    .s5-peer tbody tr.s5-self td{font-weight:800;}
+    .s5-peer tbody tr.s5-self .s5-scheme{color:var(--primary);}
+    .s5-self-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:var(--r-full);background:var(--primary);color:#fff;font-size:0.5rem;font-weight:800;letter-spacing:0.3px;vertical-align:middle;}
+
   </style>
 </head>
 <body>
@@ -303,8 +387,8 @@
   <!-- Active Choice Panel -->
   <div class="pnl" id="pAct">
     <div class="act-box">
-      <h3>Active Choice — Type Your Own Split</h3>
-      <p class="desc">Enter percentages for each asset class. Total must equal 100%. Equity is capped at 75% per PFRDA rules.</p>
+      <h3>Active Choice </h3>
+      <p class="desc">Equity is capped at 75% per PFRDA rules.</p>
       <div class="ig">
         <div class="igr"><label class="eq">Equity (E) <span class="hint">— Stock Market Growth Assets</span></label><input type="number" id="inpE" min="0" max="75" placeholder="0" /></div>
         <div class="igr"><label class="co">Corporate Bonds (C) <span class="hint">— Fixed Corporate Debt</span></label><input type="number" id="inpC" min="0" max="100" placeholder="0" /></div>
@@ -342,6 +426,71 @@
   <div class="ph" id="ph">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>
     <p>Pick your <strong>Age Group</strong> above, then choose a <strong>Scheme Category</strong> to begin.</p>
+  </div>
+
+  <!-- SCHEME INSIGHTS (additive; revealed once a pension fund manager is
+       selected, so the user reviews analytics before proceeding to invest) -->
+  <div class="s5-wrap" id="s5Wrap">
+
+    <div class="s5-head">
+      <span class="s5-badge"><h2> Scheme Insights</h2></span>
+      <div>
+        <p id="s5Sub">Performance analytics for your selected scheme &amp; fund manager.</p>
+      </div>
+      <span class="s5-line"></span>
+    </div>
+    <!-- 5.1 PERFORMANCE & NAV TIMELINE -->
+    <div class="s5-card">
+      <div class="s5-card-h">
+        <div class="s5-card-t">📈 Scheme Performance &amp; NAV Timeline</div>
+        <div class="s5-card-s">Net Asset Value growth, in Indian Rupees (₹).</div>
+      </div>
+      <div class="s5-tabs" id="s5Tabs">
+        <button class="s5-tab s5-on" data-range="1Y">1 Year</button>
+        <button class="s5-tab" data-range="3Y">3 Years</button>
+        <button class="s5-tab" data-range="5Y">5 Years</button>
+        <button class="s5-tab" data-range="ALL">All Time</button>
+      </div>
+      <div class="s5-legend">
+        <span class="s5-leg"><span class="s5-dot s5-green"></span>🟢 <span id="s5LegScheme">Selected Scheme</span> (NAV)</span>
+      </div>
+      <div class="s5-chart-box"><canvas id="s5NavChart"></canvas></div>
+    <!-- 5.3 SECTOR-WISE HOLDINGS DONUT -->
+    <div class="s5-card">
+      <div class="s5-card-h">
+        <div class="s5-card-t">🍩 Sector-Wise Holdings</div>
+        <div class="s5-card-s">Click any arc or list row to isolate a sector. The center updates instantly.</div>
+      </div>
+      <div class="s5-donut-grid">
+        <div class="s5-donut-box">
+          <svg class="s5-donut-svg" id="s5Donut" viewBox="0 0 100 100" aria-label="Sector allocation donut chart"></svg>
+          <div class="s5-center">
+            <div class="s5-center-lbl">Sector</div>
+            <div class="s5-center-nm" id="s5DonutName">All Sectors</div>
+            <div class="s5-center-pct" id="s5DonutPct">100%</div>
+          </div>
+        </div>
+        <div class="s5-sectors" id="s5SectorList"></div>
+      </div>
+    </div>
+    <!-- 5.4 COMPETITIVE PEER COMPARISON -->
+    <div class="s5-card">
+      <div class="s5-card-h">
+        <div class="s5-card-t">📊 Competitive Peer Comparison</div>
+        <div class="s5-card-s">Your selected scheme benchmarked against industry alternatives.</div>
+      </div>
+      <table class="s5-tbl s5-peer">
+        <thead><tr><th>Scheme Name</th><th class="s5-num">1-Yr Return (per ₹10,000)</th><th class="s5-num">Assets Under Management</th></tr></thead>
+        <tbody>
+          <tr class="s5-self"><td class="s5-scheme">Selected Scheme (LC75 Reference)<span class="s5-self-tag">Your Pick</span></td><td class="s5-num">₹10,230</td><td class="s5-num">₹18,450 Cr</td></tr>
+          <tr><td class="s5-scheme">HDFC Pension Management Fund</td><td class="s5-num">₹10,245</td><td class="s5-num">₹24,890 Cr</td></tr>
+          <tr><td class="s5-scheme">SBI Pension Funds Pvt. Ltd</td><td class="s5-num">₹10,215</td><td class="s5-num">₹31,200 Cr</td></tr>
+          <tr><td class="s5-scheme">ICICI Prudential Pension Fund</td><td class="s5-num">₹10,222</td><td class="s5-num">₹15,670 Cr</td></tr>
+          <tr><td class="s5-scheme">UTI Retirement Solutions</td><td class="s5-num">₹10,195</td><td class="s5-num">₹12,110 Cr</td></tr>
+        </tbody>
+      </table>
+    </div>
+
   </div>
 </div>
 
@@ -550,12 +699,14 @@ function resetAct(){
   S.aE=0;S.aC=0;S.aG=0;S.aOk=false;S.actPfm='';
   $('inpE').value='';$('inpC').value='';$('inpG').value='';
   $('inpE').className='';$('inpC').className='';$('inpG').className='';
+  delete $('inpE').dataset.auto;delete $('inpC').dataset.auto;delete $('inpG').dataset.auto;
   $('aCapAlert').className='act-alert';$('aOkAlert').className='act-alert';
   $('sumP').className='sum-p neutral';$('sumP').textContent='Total: 0%';
   $('pfmAct').classList.remove('show');$('allocAct').classList.remove('show');
   $('pfmActGrid').querySelectorAll('.pfm-card').forEach(c=>c.classList.remove('on'));
 }
 function validateAct(){
+  autoFillThird();
   const e=parseInt($('inpE').value)||0,c=parseInt($('inpC').value)||0,g=parseInt($('inpG').value)||0;
   S.aE=e;S.aC=c;S.aG=g;
   const tot=e+c+g,cap=e>75,ok=tot===100&&!cap;
@@ -569,9 +720,34 @@ function validateAct(){
   else{$('aOkAlert').className='act-alert';$('pfmAct').classList.remove('show');S.actPfm='';$('allocAct').classList.remove('show');hideFtr();$('pfmActGrid').querySelectorAll('.pfm-card').forEach(c=>c.classList.remove('on'));}
   S.aOk=ok;syncSteps();
 }
-$('inpE').addEventListener('input',validateAct);
-$('inpC').addEventListener('input',validateAct);
-$('inpG').addEventListener('input',validateAct);
+
+const ACT_INPUTS=['inpE','inpC','inpG'];
+// When exactly two of the three fields have a value, auto-complete the third
+// so E + C + G equals 100%. The remaining (untouched) field is the target.
+function autoFillThird(){
+  const filled=ACT_INPUTS.filter(id=>$(id).value.trim()!=='');
+  if(filled.length!==2) return;
+  const target=ACT_INPUTS.find(id=>$(id).value.trim()==='');
+  if(!target) return;
+  const sumTwo=filled.reduce((s,id)=>s+(parseInt($(id).value)||0),0);
+  let remaining=100-sumTwo;
+  if(remaining<0) remaining=0;            // over 100 → clamp; validation flags it
+  $(target).value=remaining;
+  $(target).dataset.auto='1';             // mark as auto-filled (not user-typed)
+}
+// Track manual edits and keep the auto-filled field in sync.
+function onActInput(e){
+  const id=e.target.id;
+  delete $(id).dataset.auto;              // a field the user typed is no longer auto
+  // If the user edits a manual field while another field was auto-filled,
+  // clear that auto field so it recomputes to keep the total at 100%.
+  const autoId=ACT_INPUTS.find(fid=>fid!==id && $(fid).dataset.auto==='1');
+  if(autoId){ $(autoId).value=''; delete $(autoId).dataset.auto; }
+  validateAct();
+}
+$('inpE').addEventListener('input',onActInput);
+$('inpC').addEventListener('input',onActInput);
+$('inpG').addEventListener('input',onActInput);
 
 // ===== 4A =====
 function render4A(){
@@ -637,6 +813,269 @@ $('btnGo').addEventListener('click',()=>{
 });
 
 syncSteps();
+</script>
+
+<!-- ================================================================
+     STEP 5 — DYNAMIC SCHEME INSIGHTS (isolated namespace)
+     Self-contained IIFE. Does not read or mutate any Step 1-4
+     variables (S, $, LC, MSF, etc.). Hooks #btnGo additively.
+     ================================================================ -->
+<script>
+(function Step5Insights(){
+  "use strict";
+
+  var $id = function(x){ return document.getElementById(x); };
+
+  /* ---------- 5.1 NAV timeline data (mock, per range) ---------- */
+  // Each range: array of {t: dateLabel, s: schemeNAV}
+  var NAV = {
+    "1Y": buildSeries(12, "month", 34.10, 34.90, 33.20, 33.85),
+    "3Y": buildSeries(12, "quarter", 28.40, 34.90, 28.90, 33.85),
+    "5Y": buildSeries(10, "halfyear", 24.20, 34.90, 25.10, 33.85),
+    "ALL": buildSeries(12, "year", 10.00, 34.90, 10.00, 33.85)
+  };
+
+  function buildSeries(n, kind, sStart, sEnd, bStart, bEnd){
+    var out = [], now = new Date(2026, 7, 3); // Aug 3, 2026
+    for(var i=0;i<n;i++){
+      var f = n===1 ? 1 : i/(n-1);
+      // gentle easing + tiny deterministic ripple so lines look organic, not straight
+      var wobble = Math.sin(i*1.7)*0.35;
+      var s = sStart + (sEnd - sStart)*f + wobble;
+      var b = bStart + (bEnd - bStart)*f + Math.sin(i*1.3+1)*0.22;
+      out.push({ t: labelFor(now, kind, (n-1-i)), s: round2(s), b: round2(b) });
+    }
+    return out;
+  }
+  function labelFor(base, kind, back){
+    var d = new Date(base.getTime());
+    if(kind==="month"){ d.setMonth(d.getMonth()-back); return d.toLocaleString('en-IN',{month:'short',year:'2-digit'}); }
+    if(kind==="quarter"){ d.setMonth(d.getMonth()-back*3); return d.toLocaleString('en-IN',{month:'short',year:'2-digit'}); }
+    if(kind==="halfyear"){ d.setMonth(d.getMonth()-back*6); return d.toLocaleString('en-IN',{month:'short',year:'2-digit'}); }
+    d.setFullYear(d.getFullYear()-back); return String(d.getFullYear());
+  }
+  function round2(v){ return Math.round(v*100)/100; }
+
+  var navChart = null, currentRange = "1Y";
+
+  function renderNav(range){
+    var canvas = $id("s5NavChart");
+    if(!canvas || typeof Chart === "undefined") return;
+    var series = NAV[range] || NAV["1Y"];
+    var labels = series.map(function(p){ return p.t; });
+    var labels = series.map(function(p){ return p.t; });
+    var scheme = series.map(function(p){ return p.s; });
+
+    if(navChart){
+      navChart.data.labels = labels;
+      navChart.data.datasets[0].data = scheme;
+      navChart.update();
+      return;
+    }
+
+    navChart = new Chart(canvas.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: labels,
+        datasets: [
+          { label: "Selected Scheme", data: scheme, borderColor: "#16A34A",
+            backgroundColor: "rgba(22,163,74,0.08)", borderWidth: 2.5, tension: 0.35,
+            fill: true, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: "#16A34A" }
+        ]
+      },tions: {
+        responsive: true, maintainAspectRatio: false,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: "#0F172A", padding: 10, cornerRadius: 8, titleFont:{weight:"700"},
+            callbacks: {
+              title: function(items){ return items[0].label; },
+              label: function(ctx){ return " " + ctx.dataset.label + ": \u20B9" + Number(ctx.parsed.y).toFixed(2); }
+            }
+          }
+        },
+        scales: {
+          x: { grid: { display:false }, ticks: { font:{ size:10 }, color:"#94A3B8", maxRotation:0, autoSkip:true } },
+          y: { grid: { color:"#F1F5F9" }, ticks: { font:{ size:10 }, color:"#94A3B8",
+                callback: function(v){ return "\u20B9" + v; } } }
+        }
+      }
+    });
+  }
+
+  function wireTabs(){
+    var tabs = document.querySelectorAll("#s5Tabs .s5-tab");
+    tabs.forEach(function(tab){
+      tab.addEventListener("click", function(){
+        tabs.forEach(function(t){ t.classList.remove("s5-on"); });
+        tab.classList.add("s5-on");
+        currentRange = tab.getAttribute("data-range");
+        renderNav(currentRange);
+      });
+    });
+  }
+
+  /* ---------- 5.3 Sector donut data ---------- */
+  var SECTORS = [
+    { name: "Financial",              pct: 25.68, color: "#0F766E" },
+    { name: "Entities",               pct: 16.01, color: "#2563EB" },
+    { name: "Unspecified",            pct: 11.88, color: "#7C3AED" },
+    { name: "Technology",             pct:  9.65, color: "#DC2626" },
+    { name: "Consumer Discretionary", pct:  9.02, color: "#D97706" },
+    { name: "Energy & Utilities",     pct:  8.24, color: "#0891B2" },
+    { name: "Industrials",            pct:  6.64, color: "#65A30D" },
+    { name: "Materials",              pct:  5.07, color: "#DB2777" },
+    { name: "Consumer Staples",       pct:  4.32, color: "#EA580C" },
+    { name: "Healthcare",             pct:  3.50, color: "#16A34A" }
+  ];
+  var activeSector = -1;
+
+  function polar(cx, cy, r, angleDeg){
+    var a = (angleDeg) * Math.PI / 180;
+    return { x: cx + r*Math.cos(a), y: cy + r*Math.sin(a) };
+  }
+  function arcPath(cx, cy, rOuter, rInner, startA, endA){
+    var large = (endA - startA) <= 180 ? 0 : 1;
+    var p1 = polar(cx, cy, rOuter, startA);
+    var p2 = polar(cx, cy, rOuter, endA);
+    var p3 = polar(cx, cy, rInner, endA);
+    var p4 = polar(cx, cy, rInner, startA);
+    return [
+      "M", p1.x, p1.y,
+      "A", rOuter, rOuter, 0, large, 1, p2.x, p2.y,
+      "L", p3.x, p3.y,
+      "A", rInner, rInner, 0, large, 0, p4.x, p4.y,
+      "Z"
+    ].join(" ");
+  }
+
+  function renderDonut(){
+    var svg = $id("s5Donut");
+    if(!svg) return;
+    var cx=50, cy=50, rO=46, rI=27, start=0;
+    var frag = "";
+    SECTORS.forEach(function(sec, i){
+      var sweep = sec.pct/100*360;
+      var d = arcPath(cx, cy, rO, rI, start, start+sweep);
+      frag += '<path class="s5-arc" data-i="'+i+'" d="'+d+'" fill="'+sec.color+'" stroke="#fff" stroke-width="0.8"></path>';
+      start += sweep;
+    });
+    svg.innerHTML = frag;
+    svg.querySelectorAll(".s5-arc").forEach(function(arc){
+      arc.addEventListener("click", function(){ selectSector(+arc.getAttribute("data-i")); });
+    });
+
+    // sector text list
+    var list = $id("s5SectorList");
+    list.innerHTML = SECTORS.map(function(sec, i){
+      return '<div class="s5-sec" data-i="'+i+'">'+
+        '<span class="s5-sec-dot" style="background:'+sec.color+'"></span>'+
+        '<span class="s5-sec-nm">'+sec.name+'</span>'+
+        '<span class="s5-sec-pct">'+sec.pct.toFixed(2)+'%</span></div>';
+    }).join("");
+    list.querySelectorAll(".s5-sec").forEach(function(row){
+      row.addEventListener("click", function(){ selectSector(+row.getAttribute("data-i")); });
+    });
+  }
+
+  function selectSector(i){
+    // toggle off if same clicked again
+    if(activeSector === i){ i = -1; }
+    activeSector = i;
+    var arcs = document.querySelectorAll("#s5Donut .s5-arc");
+    var rows = document.querySelectorAll("#s5SectorList .s5-sec");
+    arcs.forEach(function(a){
+      var ai = +a.getAttribute("data-i");
+      a.classList.toggle("s5-pop", ai === i);
+      a.classList.toggle("s5-dim", i !== -1 && ai !== i);
+    });
+    rows.forEach(function(r){
+      var ri = +r.getAttribute("data-i");
+      r.classList.toggle("s5-active", ri === i);
+      r.classList.toggle("s5-faded", i !== -1 && ri !== i);
+    });
+    var nm = $id("s5DonutName"), pct = $id("s5DonutPct");
+    if(i === -1){
+      nm.textContent = "All Sectors"; pct.textContent = "100%"; pct.style.color = "var(--text)";
+    } else {
+      nm.textContent = SECTORS[i].name;
+      pct.textContent = SECTORS[i].pct.toFixed(2) + "%";
+      pct.style.color = SECTORS[i].color;
+    }
+  }
+
+  /* ---------- Reveal trigger: hook footer visibility additively ---------- */
+  var built = false;
+  function buildOnce(){
+    if(built) return;
+    built = true;
+    wireTabs();
+    renderNav(currentRange);
+    renderDonut();
+    selectSector(-1);
+  }
+
+  function reflectScheme(){
+    // Best-effort, read-only pull of the chosen scheme label from the footer
+    // (populated by Step 1-4). Purely cosmetic; never throws.
+    try {
+      var nm = document.getElementById("fNm");
+      var legend = document.getElementById("s5LegScheme");
+      var sub = document.getElementById("s5Sub");
+      if(nm && nm.textContent && nm.textContent.trim() !== "\u2014"){
+        if(legend) legend.textContent = nm.textContent.trim();
+        if(sub) sub.textContent = "Performance analytics for " + nm.textContent.trim() + ".";
+      }
+    } catch(e){ /* no-op */ }
+  }
+
+  function reveal(){
+    var wrap = $id("s5Wrap");
+    if(!wrap || wrap.classList.contains("s5-open")) return;
+    buildOnce();
+    reflectScheme();
+    wrap.classList.add("s5-open");
+    if(navChart) navChart.resize();
+    // smoothly bring the panel into view below the criteria selections
+    setTimeout(function(){ wrap.scrollIntoView({ behavior:"smooth", block:"start" }); }, 140);
+  }
+
+  function collapse(){
+    var wrap = $id("s5Wrap");
+    if(wrap) wrap.classList.remove("s5-open");
+  }
+
+  // The footer (#ftr) only gains the ".show" class once a pension fund
+  // manager selection is complete (via Step 1-4's showFtr()). We watch that
+  // class purely as a read-only signal — never mutating Step 1-4 state.
+  function watchSelection(){
+    var ftr = $id("ftr");
+    if(!ftr || typeof MutationObserver === "undefined") return;
+    var obs = new MutationObserver(function(){
+      if(ftr.classList.contains("show")) reveal();
+      else collapse();
+    });
+    obs.observe(ftr, { attributes:true, attributeFilter:["class"] });
+    // handle the case where a selection is already complete on init
+    if(ftr.classList.contains("show")) reveal();
+  }
+
+  function init(){
+    // Reveal insights the moment a pension fund is selected (footer appears),
+    // so the user can review analytics BEFORE proceeding to invest.
+    watchSelection();
+    // Collapse if the user cancels the whole selection.
+    var cancel = $id("btnX");
+    if(cancel){ cancel.addEventListener("click", collapse); }
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
 </script>
 </body>
 </html>
