@@ -319,6 +319,71 @@
     .s5-peer tbody tr.s5-self .s5-scheme{color:var(--primary);}
     .s5-self-tag{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:var(--r-full);background:var(--primary);color:#fff;font-size:0.5rem;font-weight:800;letter-spacing:0.3px;vertical-align:middle;}
 
+    /* ============================================================
+       RELEVANT SCHEMES TABLE (Step 2 -> Step 3 workflow, additive)
+       Prefixed .rel- to avoid collisions. Renders under every
+       category and routes to Scheme Insights on row click.
+       ============================================================ */
+    .rel-wrap{opacity:0;max-height:0;overflow:hidden;transition:opacity 0.25s var(--ease),max-height 0.35s var(--ease);margin-bottom:18px;}
+    .rel-wrap.rel-open{opacity:1;max-height:6000px;overflow:visible;}
+    .rel-head{margin-bottom:10px;}
+    .rel-head .st{margin-bottom:2px;}
+    .rel-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-sm);}
+    .rel-tbl{width:100%;border-collapse:collapse;}
+    .rel-tbl th{padding:14px 18px;font-size:0.6875rem;font-weight:600;text-align:left;background:var(--card);color:var(--text-s);border-bottom:1px solid var(--border);}
+    .rel-tbl th.rel-num{text-align:right;}
+    .rel-tbl td{padding:15px 18px;font-size:0.8125rem;border-bottom:1px solid var(--border-l);vertical-align:middle;}
+    .rel-tbl td.rel-num{text-align:right;font-variant-numeric:tabular-nums;}
+    .rel-tbl tr:last-child td{border-bottom:none;}
+    .rel-tbl tbody tr{cursor:pointer;transition:background 0.15s var(--ease);}
+    .rel-tbl tbody tr:hover{background:var(--bg);}
+    .rel-tbl tbody tr:focus-visible{outline:2px solid var(--primary);outline-offset:-2px;background:var(--bg);}
+    .rel-fund{display:block;font-weight:700;color:var(--primary);font-size:0.875rem;}
+    .rel-sub-lbl{font-size:0.6875rem;color:var(--text-s);margin-top:3px;font-weight:500;}
+    .rel-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px;align-items:center;}
+    .rel-tag{font-size:0.625rem;font-weight:500;color:var(--text-m);}
+    .rel-tag:not(:last-child)::after{content:'\00B7';margin-left:5px;color:var(--text-m);}
+    .rel-risk{color:var(--text-s);font-weight:500;}
+    .rel-nav{font-weight:700;color:var(--text);}
+    .rel-ret{font-weight:600;color:var(--success);}
+    .rel-foot{padding:10px 18px;font-size:0.625rem;color:var(--text-m);background:var(--bg);border-top:1px solid var(--border-l);line-height:1.4;}
+
+    /* ============================================================
+       FUND DETAIL HEADER (Insights page, screenshot 2 layout)
+       ============================================================ */
+    .fd-grid{display:grid;grid-template-columns:300px 1fr;gap:18px;align-items:start;margin:6px 0 18px;}
+    @media(max-width:820px){.fd-grid{grid-template-columns:1fr;}}
+    .fd-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-sm);padding:18px;}
+    .fd-name{font-size:1.0625rem;font-weight:800;letter-spacing:-0.01em;margin-bottom:4px;}
+    .fd-scheme-sub{font-size:0.75rem;color:var(--text-s);font-weight:500;margin-bottom:14px;}
+    .fd-nav{border:1px solid var(--border);border-radius:var(--r-md);padding:12px 14px;margin-bottom:14px;}
+    .fd-nav-lbl{font-size:0.5625rem;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-m);margin-bottom:5px;}
+    .fd-nav-row{display:flex;align-items:center;gap:8px;}
+    .fd-nav-val{font-size:1.5rem;font-weight:900;}
+    .fd-chip{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:var(--r-full);font-size:0.6875rem;font-weight:700;background:var(--success-bg);color:var(--success);}
+    .fd-chip.down{background:var(--error-bg);color:var(--error);}
+    .fd-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;}
+    .fd-metric{border:1px solid var(--border);border-radius:var(--r-md);padding:11px 12px;}
+    .fd-metric .k{font-size:0.5625rem;font-weight:700;text-transform:uppercase;letter-spacing:0.4px;color:var(--text-m);margin-bottom:4px;}
+    .fd-metric .v{font-size:0.875rem;font-weight:800;line-height:1.25;}
+    .fd-metric .v small{display:block;font-size:0.625rem;font-weight:500;color:var(--text-m);margin-top:1px;}
+    .fd-invest{width:100%;padding:12px;border:none;border-radius:var(--r-md);background:var(--primary);color:#fff;font-family:var(--font);font-size:0.8125rem;font-weight:700;cursor:pointer;transition:all 0.2s var(--ease);}
+    .fd-invest:hover{background:var(--primary-h);transform:translateY(-1px);box-shadow:var(--sh-md);}
+    .fd-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);padding:0 4px;}
+    .fd-tab{padding:12px 16px;background:none;border:none;border-bottom:2px solid transparent;font-family:var(--font);font-size:0.8125rem;font-weight:600;color:var(--text-s);cursor:pointer;transition:all 0.2s var(--ease);margin-bottom:-1px;}
+    .fd-tab:hover{color:var(--primary);}
+    .fd-tab.on{color:var(--primary);border-bottom-color:var(--primary);font-weight:700;}
+    .fd-right{background:var(--card);border:1px solid var(--border);border-radius:var(--r-lg);box-shadow:var(--sh-sm);display:flex;flex-direction:column;overflow:hidden;}
+    .fd-panel{box-shadow:none !important;border:none !important;border-radius:0 !important;margin-bottom:0 !important;}
+
+    /* Separate-page / back control for the Insights view */
+    .s5-back{display:none;align-items:center;gap:6px;margin:20px 0 0;padding:8px 14px;border-radius:var(--r-sm);background:var(--card);border:1.5px solid var(--border);font-family:var(--font);font-size:0.6875rem;font-weight:700;color:var(--text-s);cursor:pointer;transition:all 0.2s var(--ease);}
+    .s5-back:hover{border-color:var(--primary);color:var(--primary);}
+    .s5-back svg{width:13px;height:13px;}
+    /* When the app is in the isolated Insights "page" state, hide the config modules. */
+    body.s5-page-mode .rel-back-hide{display:none !important;}
+    body.s5-page-mode .s5-back{display:inline-flex;}
+
   </style>
 </head>
 <body>
@@ -330,7 +395,7 @@
   </div>
 
   <!-- Steps -->
-  <div class="steps">
+  <div class="steps rel-back-hide">
     <span class="sp active" id="s1">1. Age Group</span><span class="sa">&rarr;</span>
     <span class="sp pending" id="s2">2. Category</span><span class="sa">&rarr;</span>
     <span class="sp pending" id="s3">3A. Scheme</span><span class="sa">&rarr;</span>
@@ -338,7 +403,7 @@
   </div>
 
   <!-- Step 1 -->
-  <div class="age-wrap">
+  <div class="age-wrap rel-back-hide">
     <select id="selAge" aria-label="Select age group">
       <option value="">— What is your current age group? —</option>
       <option value="18-25">18–25 (Early Career)</option>
@@ -350,7 +415,7 @@
   </div>
 
   <!-- Step 2 -->
-  <div class="pnl" id="pCat">
+  <div class="pnl rel-back-hide" id="pCat">
     <div class="cat-g" id="catG">
       <div class="cc" data-cat="lifecycle"><div class="cc-n">01</div><div class="cc-t">Lifecycle-Based</div><div class="cc-d">Auto-pilot equity that reduces with age.</div></div>
       <div class="cc" data-cat="msf"><div class="cc-n">02</div><div class="cc-t">MSF Schemes</div><div class="cc-d">Pick your risk tier with curated fund products.</div></div>
@@ -360,7 +425,7 @@
   </div>
 
   <!-- LC Panel -->
-  <div class="pnl" id="pLC">
+  <div class="pnl rel-back-hide" id="pLC">
     <div class="st">Lifecycle-Based Schemes</div>
     <div class="sd">Equity tapers with age per PFRDA's matrix. Select a variant below, then choose your fund manager.</div>
     <div class="lc-g" id="lcG"></div>
@@ -369,7 +434,7 @@
   </div>
 
   <!-- MSF Panel -->
-  <div class="pnl" id="pMSF">
+  <div class="pnl rel-back-hide" id="pMSF">
     <div class="st">MSF Schemes — Risk-Based Categories</div>
     <div class="sd">Pick a risk tier, then select a specific fund. The manager auto-binds from your choice.</div>
     <div class="msf-tg" id="msfTG">
@@ -385,7 +450,7 @@
   </div>
 
   <!-- Active Choice Panel -->
-  <div class="pnl" id="pAct">
+  <div class="pnl rel-back-hide" id="pAct">
     <div class="act-box">
       <h3>Active Choice </h3>
       <p class="desc">Equity is capped at 75% per PFRDA rules.</p>
@@ -403,7 +468,7 @@
   </div>
 
   <!-- 4A Panel -->
-  <div class="pnl" id="p4A">
+  <div class="pnl rel-back-hide" id="p4A">
     <div class="st">4A Schemes — Targeted Savings</div>
     <div class="sd">Select a scheme, then choose your fund manager from the full empanelled list.</div>
     <div class="fa-g" id="faG">
@@ -423,72 +488,116 @@
   </div>
 
   <!-- Placeholder -->
-  <div class="ph" id="ph">
+  <div class="ph rel-back-hide" id="ph">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12"/></svg>
     <p>Pick your <strong>Age Group</strong> above, then choose a <strong>Scheme Category</strong> to begin.</p>
   </div>
 
-  <!-- SCHEME INSIGHTS (additive; revealed once a pension fund manager is
-       selected, so the user reviews analytics before proceeding to invest) -->
+  <!-- STEP 3: RELEVANT PENSION SCHEMES TABLE (additive; built after a
+       category is chosen. Clicking a row routes to the Scheme Insights page.) -->
+  <div class="rel-wrap rel-back-hide" id="relWrap">
+    <div class="rel-head">
+      <div class="st" id="relTitle">Relevant Pension Schemes</div>
+      <div class="sd" id="relSub">Select a scheme below to open its detailed insights.</div>
+    </div>
+    <div class="rel-card">
+      <table class="rel-tbl">
+        <thead><tr>
+          <th>Pension Fund</th>
+          <th>Risk Category</th>
+          <th class="rel-num">NAV (&#8377;)</th>
+          <th class="rel-num">1Y</th>
+          <th class="rel-num">3Y</th>
+          <th class="rel-num">5Y</th>
+        </tr></thead>
+        <tbody id="relBody"></tbody>
+      </table>
+      <div class="rel-foot" id="relFoot"></div>
+    </div>
+  </div>
+
+  <!-- SCHEME INSIGHTS (additive; revealed as a separate page when a scheme
+       row is clicked, so the user reviews analytics for that exact scheme) -->
   <div class="s5-wrap" id="s5Wrap">
 
-    <div class="s5-head">
-      <span class="s5-badge"><h2> Scheme Insights</h2></span>
-      <div>
-        <p id="s5Sub">Performance analytics for your selected scheme &amp; fund manager.</p>
-      </div>
-      <span class="s5-line"></span>
-    </div>
-    <!-- 5.1 PERFORMANCE & NAV TIMELINE -->
-    <div class="s5-card">
-      <div class="s5-card-h">
-        <div class="s5-card-t">📈 Scheme Performance &amp; NAV Timeline</div>
-        <div class="s5-card-s">Net Asset Value growth, in Indian Rupees (₹).</div>
-      </div>
-      <div class="s5-tabs" id="s5Tabs">
-        <button class="s5-tab s5-on" data-range="1Y">1 Year</button>
-        <button class="s5-tab" data-range="3Y">3 Years</button>
-        <button class="s5-tab" data-range="5Y">5 Years</button>
-        <button class="s5-tab" data-range="ALL">All Time</button>
-      </div>
-      <div class="s5-legend">
-        <span class="s5-leg"><span class="s5-dot s5-green"></span>🟢 <span id="s5LegScheme">Selected Scheme</span> (NAV)</span>
-      </div>
-      <div class="s5-chart-box"><canvas id="s5NavChart"></canvas></div>
-    <!-- 5.3 SECTOR-WISE HOLDINGS DONUT -->
-    <div class="s5-card">
-      <div class="s5-card-h">
-        <div class="s5-card-t">🍩 Sector-Wise Holdings</div>
-        <div class="s5-card-s">Click any arc or list row to isolate a sector. The center updates instantly.</div>
-      </div>
-      <div class="s5-donut-grid">
-        <div class="s5-donut-box">
-          <svg class="s5-donut-svg" id="s5Donut" viewBox="0 0 100 100" aria-label="Sector allocation donut chart"></svg>
-          <div class="s5-center">
-            <div class="s5-center-lbl">Sector</div>
-            <div class="s5-center-nm" id="s5DonutName">All Sectors</div>
-            <div class="s5-center-pct" id="s5DonutPct">100%</div>
+    <button class="s5-back" id="s5Back" type="button">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg>
+      Back to scheme selection
+    </button>
+
+    <!-- Fund detail header (populated on row click) -->
+    <div class="fd-grid">
+      <div class="fd-card">
+        <div class="fd-name" id="fdName">—</div>
+        <div class="fd-scheme-sub" id="fdSchemeSub"></div>
+        <div class="fd-nav">
+          <div class="fd-nav-lbl" id="fdNavLbl">NAV as on —</div>
+          <div class="fd-nav-row">
+            <span class="fd-nav-val" id="fdNavVal">&#8377;—</span>
+            <span class="fd-chip" id="fdNavChip">&#9650; 0.00%</span>
           </div>
         </div>
-        <div class="s5-sectors" id="s5SectorList"></div>
+        <div class="fd-metrics">
+          <div class="fd-metric"><div class="k">Total AUM</div><div class="v" id="fdAum">—<small id="fdAumSub">as reported</small></div></div>
+          <div class="fd-metric"><div class="k">Inception</div><div class="v" id="fdInception">—<small>since inception</small></div></div>
+          <div class="fd-metric"><div class="k">Tier</div><div class="v" id="fdTier">Tier I<small>Common</small></div></div>
+          <div class="fd-metric"><div class="k">Asset class</div><div class="v" id="fdAsset">—<small>NPS category</small></div></div>
+        </div>
+        <button class="fd-invest" id="fdInvest" type="button">Invest Now</button>
       </div>
-    </div>
-    <!-- 5.4 COMPETITIVE PEER COMPARISON -->
-    <div class="s5-card">
-      <div class="s5-card-h">
-        <div class="s5-card-t">📊 Competitive Peer Comparison</div>
-        <div class="s5-card-s">Your selected scheme benchmarked against industry alternatives.</div>
+      <div class="fd-right">
+        <div class="fd-tabs" id="fdTabs">
+          <button class="fd-tab on" data-tab="performance">Performance</button>
+          <button class="fd-tab" data-tab="sectors">Sectors</button>
+          <button class="fd-tab" data-tab="peers">Peers</button>
+        </div>
+        <!-- Performance panel -->
+        <div class="s5-card fd-panel" id="fdPanelPerf">
+          <div class="s5-tabs" id="s5Tabs">
+            <button class="s5-tab s5-on" data-range="1Y">1Y</button>
+            <button class="s5-tab" data-range="3Y">3Y</button>
+            <button class="s5-tab" data-range="5Y">5Y</button>
+            <button class="s5-tab" data-range="ALL">All</button>
+          </div>
+          <div class="s5-legend">
+            <span class="s5-leg"><span class="s5-dot s5-green"></span><span id="s5LegScheme">Selected Scheme</span> (NAV)</span>
+          </div>
+          <div class="s5-chart-box"><canvas id="s5NavChart"></canvas></div>
+        </div>
+        <!-- Sectors panel -->
+        <div class="s5-card fd-panel" id="fdPanelSectors" style="display:none">
+          <div class="s5-card-h">
+            <div class="s5-card-s">Click any arc or sector row to isolate it.</div>
+          </div>
+          <div class="s5-donut-grid">
+            <div class="s5-donut-box">
+              <svg class="s5-donut-svg" id="s5Donut" viewBox="0 0 100 100" aria-label="Sector allocation donut chart"></svg>
+              <div class="s5-center">
+                <div class="s5-center-lbl">Sector</div>
+                <div class="s5-center-nm" id="s5DonutName">All Sectors</div>
+                <div class="s5-center-pct" id="s5DonutPct">100%</div>
+              </div>
+            </div>
+            <div class="s5-sectors" id="s5SectorList"></div>
+          </div>
+        </div>
+        <!-- Peers panel -->
+        <div class="s5-card fd-panel" id="fdPanelPeers" style="display:none">
+          <div class="s5-card-h">
+            <div class="s5-card-s">Benchmarked against industry alternatives.</div>
+          </div>
+          <table class="s5-tbl s5-peer">
+            <thead><tr><th>Scheme Name</th><th class="s5-num">1-Yr Return (per &#8377;10,000)</th><th class="s5-num">AUM</th></tr></thead>
+            <tbody>
+              <tr class="s5-self"><td class="s5-scheme">Selected Scheme<span class="s5-self-tag">Your Pick</span></td><td class="s5-num">&#8377;10,230</td><td class="s5-num">&#8377;18,450 Cr</td></tr>
+              <tr><td class="s5-scheme">HDFC Pension Management Fund</td><td class="s5-num">&#8377;10,245</td><td class="s5-num">&#8377;24,890 Cr</td></tr>
+              <tr><td class="s5-scheme">SBI Pension Funds Pvt. Ltd</td><td class="s5-num">&#8377;10,215</td><td class="s5-num">&#8377;31,200 Cr</td></tr>
+              <tr><td class="s5-scheme">ICICI Prudential Pension Fund</td><td class="s5-num">&#8377;10,222</td><td class="s5-num">&#8377;15,670 Cr</td></tr>
+              <tr><td class="s5-scheme">UTI Retirement Solutions</td><td class="s5-num">&#8377;10,195</td><td class="s5-num">&#8377;12,110 Cr</td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
-      <table class="s5-tbl s5-peer">
-        <thead><tr><th>Scheme Name</th><th class="s5-num">1-Yr Return (per ₹10,000)</th><th class="s5-num">Assets Under Management</th></tr></thead>
-        <tbody>
-          <tr class="s5-self"><td class="s5-scheme">Selected Scheme (LC75 Reference)<span class="s5-self-tag">Your Pick</span></td><td class="s5-num">₹10,230</td><td class="s5-num">₹18,450 Cr</td></tr>
-          <tr><td class="s5-scheme">HDFC Pension Management Fund</td><td class="s5-num">₹10,245</td><td class="s5-num">₹24,890 Cr</td></tr>
-          <tr><td class="s5-scheme">SBI Pension Funds Pvt. Ltd</td><td class="s5-num">₹10,215</td><td class="s5-num">₹31,200 Cr</td></tr>
-          <tr><td class="s5-scheme">ICICI Prudential Pension Fund</td><td class="s5-num">₹10,222</td><td class="s5-num">₹15,670 Cr</td></tr>
-          <tr><td class="s5-scheme">UTI Retirement Solutions</td><td class="s5-num">₹10,195</td><td class="s5-num">₹12,110 Cr</td></tr>
-        </tbody>
-      </table>
     </div>
 
   </div>
@@ -507,7 +616,7 @@
 
 <script>
 /* ================================================================
-   IMMUTABLE 10-PFM REGISTRY (PFRDA-empanelled, verified)
+   IMMUTABLE 10-PFM REGISTRY 
    ================================================================ */
 const PFM_REGISTRY = Object.freeze([
   { id:'SBI',   name:'SBI Pension Funds Pvt. Ltd.',                         short:'SBI' },
@@ -523,7 +632,7 @@ const PFM_REGISTRY = Object.freeze([
 ]);
 
 /* ================================================================
-   LIFECYCLE DATA (from .txt files — exact E/C/G per age band)
+   LIFECYCLE DATA 
    ================================================================ */
 const LC={
   '18-25':{'lc-75':{n:'LC-75 (Aggressive)',E:75,C:10,G:15,risk:'Aggressive Growth',cls:'aggressive',d:'Max equity 75% until 35, tapering to 15% by 55+.'},'blc':{n:'BLC (Balanced)',E:50,C:30,G:20,risk:'Balanced Growth',cls:'balanced',d:'Equity 50% until 45, tapering to 35% by 55+.'},'lc-50':{n:'LC-50 (Moderate)',E:50,C:30,G:20,risk:'Balanced Growth',cls:'balanced',d:'Equity 50% until 35, tapering to 10% by 55+. Default auto choice.'},'lc-25':{n:'LC-25 (Conservative)',E:25,C:35,G:40,risk:'Conservative',cls:'conservative',d:'Equity capped at 25% until 35, tapering to 5% by 55+.'}},
@@ -534,7 +643,7 @@ const LC={
 };
 
 /* ================================================================
-   MSF DATA (from .txt files — same across age groups)
+   MSF DATA 
    ================================================================ */
 const MSF={
   aggressive:{title:'Aggressive Growth',risk:'Very High Risk',range:'80%\u2013100%',riskCls:'aggressive',schemes:[
@@ -667,15 +776,15 @@ function renderMsfSchemes(){
   if(!d||d.schemes.length===0){$('msfEmpty').classList.add('show');syncSteps();return;}
   const box=$('msfTB');
   box.innerHTML=`<div class="msf-tb-h"><div class="msf-tb-t">${d.title} \u2014 All Available Funds</div><div class="msf-tb-s"><span class="rb ${d.riskCls}">${d.risk}</span> Equity Range: ${d.range}</div></div>
-  <table class="mtbl"><thead><tr><th></th><th>Scheme</th><th>Fund Manager</th><th class="ctr">Equity</th><th class="ctr">Corp Bonds</th><th class="ctr">Govt Sec</th><th class="ctr">Cost</th></tr></thead>
-  <tbody>${d.schemes.map((s,i)=>`<tr data-i="${i}"><td class="ctr"><input type="radio" name="msfR" class="rd"/></td><td class="fn">${s.n}</td><td class="pm">${s.pfm}</td><td class="ve">${s.E}</td><td class="vc">${s.C}</td><td class="vg">${s.G}</td><td class="cost">${s.cost}</td></tr>`).join('')}</tbody></table>
+  <table class="mtbl"><thead><tr><th>Scheme</th><th>Fund Manager</th><th class="ctr">Equity</th><th class="ctr">Corp Bonds</th><th class="ctr">Govt Sec</th><th class="ctr">Cost</th></tr></thead>
+  <tbody>${d.schemes.map((s,i)=>`<tr data-i="${i}"><td class="fn">${s.n}</td><td class="pm">${s.pfm}</td><td class="ve">${s.E}</td><td class="vc">${s.C}</td><td class="vg">${s.G}</td><td class="cost">${s.cost}</td></tr>`).join('')}</tbody></table>
   <div class="msf-fn">${d.note}</div>`;
   box.classList.add('show');
   box.querySelectorAll('tbody tr').forEach(row=>{
     row.addEventListener('click',()=>{
       const i=+row.dataset.i;S.msfIdx=i;
       box.querySelectorAll('tr').forEach(r=>r.classList.remove('on'));
-      row.classList.add('on');row.querySelector('.rd').checked=true;
+      row.classList.add('on');
       const s=d.schemes[i];
       allocBox($('allocMSF'),s.n,s.E,s.C,s.G,s.pfm);
       syncSteps();
@@ -863,7 +972,6 @@ syncSteps();
     if(!canvas || typeof Chart === "undefined") return;
     var series = NAV[range] || NAV["1Y"];
     var labels = series.map(function(p){ return p.t; });
-    var labels = series.map(function(p){ return p.t; });
     var scheme = series.map(function(p){ return p.s; });
 
     if(navChart){
@@ -882,7 +990,8 @@ syncSteps();
             backgroundColor: "rgba(22,163,74,0.08)", borderWidth: 2.5, tension: 0.35,
             fill: true, pointRadius: 0, pointHoverRadius: 5, pointHoverBackgroundColor: "#16A34A" }
         ]
-      },tions: {
+      },
+      options: {
         responsive: true, maintainAspectRatio: false,
         interaction: { mode: "index", intersect: false },
         plugins: {
@@ -1031,17 +1140,24 @@ syncSteps();
   }
 
   function reveal(){
+    // In the corrected workflow, Scheme Insights is a separate "page" reached
+    // by clicking a scheme row (Step 3). The old footer-driven auto-reveal is
+    // therefore gated: it only proceeds when the router has entered page mode,
+    // keeping the insights isolated by default.
+    if(!document.body.classList.contains("s5-page-mode")) return;
     var wrap = $id("s5Wrap");
     if(!wrap || wrap.classList.contains("s5-open")) return;
     buildOnce();
     reflectScheme();
     wrap.classList.add("s5-open");
     if(navChart) navChart.resize();
-    // smoothly bring the panel into view below the criteria selections
     setTimeout(function(){ wrap.scrollIntoView({ behavior:"smooth", block:"start" }); }, 140);
   }
 
   function collapse(){
+    // Do not collapse while the router owns the page-mode view; the Back
+    // button is the sole exit from the Scheme Insights page.
+    if(document.body.classList.contains("s5-page-mode")) return;
     var wrap = $id("s5Wrap");
     if(wrap) wrap.classList.remove("s5-open");
   }
@@ -1068,6 +1184,423 @@ syncSteps();
     // Collapse if the user cancels the whole selection.
     var cancel = $id("btnX");
     if(cancel){ cancel.addEventListener("click", collapse); }
+  }
+
+  if(document.readyState === "loading"){
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  /* ---------- Public API for the Step 3 row-click router ----------
+     Additive surface so the workflow controller can drive the exact
+     same render pipeline used above, plus inject per-scheme values.  */
+  window.SchemeInsights = {
+    buildOnce: buildOnce,
+    renderNav: renderNav,
+    renderDonut: renderDonut,
+    selectSector: selectSector,
+    resize: function(){ if(navChart) navChart.resize(); },
+    // Apply scheme-specific values (sector mix + peer self-row + labels).
+    applyScheme: function(info){
+      if(!info) return;
+      // Sector-Wise Holdings: swap dataset if provided, else keep default.
+      if(Array.isArray(info.sectors) && info.sectors.length){
+        SECTORS = info.sectors.slice();
+      }
+      // Update legend + subtitle labels.
+      var legend = $id("s5LegScheme"), sub = $id("s5Sub");
+      if(legend && info.name) legend.textContent = info.name;
+      if(sub && info.name) sub.textContent = "Performance analytics for " + info.name + ".";
+      // Peer Comparison self-row (first .s5-self row) reflects the pick.
+      var selfRow = document.querySelector(".s5-peer tbody tr.s5-self .s5-scheme");
+      if(selfRow && info.name){
+        selfRow.innerHTML = info.name + '<span class="s5-self-tag">Your Pick</span>';
+      }
+      var selfCells = document.querySelectorAll(".s5-peer tbody tr.s5-self .s5-num");
+      if(selfCells.length >= 2 && info.peer){
+        if(info.peer.ret) selfCells[0].textContent = info.peer.ret;
+        if(info.peer.aum) selfCells[1].textContent = info.peer.aum;
+      }
+      // Re-render visuals with the applied data.
+      buildOnce();
+      renderNav(currentRange);
+      renderDonut();
+      selectSector(-1);
+    }
+  };
+})();
+</script>
+
+<!-- ================================================================
+     STEP 3 WORKFLOW ROUTER (additive, isolated IIFE)
+     - Builds the "Relevant Pension Schemes" table right after a
+       category is selected in Step 2 (for all four categories).
+     - On row click, transitions to the Scheme Insights "page":
+       hides config modules (body.s5-page-mode) and drives
+       window.SchemeInsights to reveal + populate that exact scheme.
+     Reads Step 1-4 data (LC, MSF, PFM_REGISTRY, S) read-only.
+     ================================================================ -->
+<script>
+(function Step3Router(){
+  "use strict";
+  var $g = function(x){ return document.getElementById(x); };
+
+  /* Deterministic sector-mix generator so each scheme's donut differs
+     coherently by its equity weight (higher equity -> more Financial/Tech). */
+  function sectorsFor(eq){
+    eq = Math.max(0, Math.min(100, eq || 0));
+    var f = eq / 100;
+    function r(base, span){ return Math.round((base + span * f) * 100) / 100; }
+    var raw = [
+      { name: "Financial",              pct: r(18, 12), color: "#0F766E" },
+      { name: "Entities",               pct: r(14,  4), color: "#2563EB" },
+      { name: "Technology",             pct: r( 6,  8), color: "#DC2626" },
+      { name: "Consumer Discretionary", pct: r( 7,  4), color: "#D97706" },
+      { name: "Energy & Utilities",     pct: r( 9, -2), color: "#0891B2" },
+      { name: "Industrials",            pct: r( 6,  1), color: "#65A30D" },
+      { name: "Materials",              pct: r( 5,  0), color: "#DB2777" },
+      { name: "Consumer Staples",       pct: r( 8, -4), color: "#EA580C" },
+      { name: "Healthcare",             pct: r( 6, -3), color: "#16A34A" }
+    ];
+    var sum = raw.reduce(function(s, x){ return s + x.pct; }, 0);
+    var rest = Math.max(0, Math.round((100 - sum) * 100) / 100);
+    raw.push({ name: "Unspecified", pct: rest, color: "#7C3AED" });
+    return raw;
+  }
+
+  /* Small deterministic hash so the same scheme name always yields the same
+     mock NAV / returns / AUM (stable across re-renders, varied across funds). */
+  function hashStr(str){
+    var h = 0, i;
+    str = String(str || "");
+    for(i = 0; i < str.length; i++){ h = (h * 31 + str.charCodeAt(i)) | 0; }
+    return Math.abs(h);
+  }
+
+  /* Per-scheme metrics used by both the list table and the detail header.
+     Returns are nudged by the equity weight (more equity -> higher spread). */
+  function metricsFor(name, eq){
+    var h = hashStr(name);
+    eq = Math.max(0, Math.min(100, eq || 0));
+    var equityBias = eq / 100;                    // 0..1
+    var nav   = 22 + (h % 2600) / 100;            // ~22.00 .. 48.00
+    var oneY  = 4.5 + (h % 350) / 100 + equityBias * 2.2;   // ~4.5 .. 10.2
+    var threeY= 8.5 + (h % 500) / 100 + equityBias * 3.0;   // ~8.5 .. 16.5
+    var fiveY = 9.5 + (h % 400) / 100 + equityBias * 3.4;   // ~9.5 .. 16.9
+    var aum   = 8000 + (h % 52000);               // ₹ Cr
+    var years = 2010 + (h % 12);                  // inception year 2010..2021
+    var months= ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    var day   = 1 + (h % 27);
+    var dayChg= Math.round(((h % 45) / 100 - 0.05) * 100) / 100; // ~-0.05..0.40
+    return {
+      nav: Math.round(nav * 100) / 100,
+      oneY: Math.round(oneY * 100) / 100,
+      threeY: Math.round(threeY * 100) / 100,
+      fiveY: Math.round(fiveY * 100) / 100,
+      aum: aum,
+      aumLabel: "\u20B9" + aum.toLocaleString("en-IN") + " Cr",
+      inception: (day < 10 ? "0" + day : day) + "-" + months[h % 12] + "-" + years,
+      dayChange: dayChg
+    };
+  }
+  function pctCell(v){
+    var sign = v >= 0 ? "+" : "";
+    return '<span class="rel-ret">' + sign + v.toFixed(2) + '%</span>';
+  }
+
+  /* Build the row model for the selected category. Each row is keyed on a
+     PFM (pension fund manager) so the "Pension Fund" column shows fund names
+     like "HDFC Pension Fund", matching the NPS Central explore UX.
+
+     The scheme sub-category becomes a sub-label (e.g. "LC-75 · Aggressive").
+     For MSF, each row is the specific scheme that fund manager offers under
+     that tier (one row per scheme, labelled by manager name).
+     For Lifecycle / Active / 4A, every empanelled PFM is listed. */
+  function rowsForCategory(cat, age){
+    var rows = [];
+    var PFM = (typeof PFM_REGISTRY !== "undefined") ? PFM_REGISTRY : [];
+
+    /* Readable fund display names (short label → friendly "Pension Fund" name). */
+    var FUND_DISPLAY = {
+      SBI:   "SBI Pension Fund",
+      HDFC:  "HDFC Pension Fund",
+      ICICI: "ICICI Prudential Pension Fund",
+      UTI:   "UTI Retirement Solutions",
+      Kotak: "Kotak Mahindra Pension Fund",
+      LIC:   "LIC Pension Fund",
+      Tata:  "Tata Pension Fund",
+      ABSL:  "Aditya Birla Sun Life Pension Fund",
+      Axis:  "AXIS Pension Fund Management",
+      DSP:   "DSP Pension Fund"
+    };
+    function displayName(id){ return FUND_DISPLAY[id] || (PFM.find(function(p){ return p.id===id; }) || {}).name || id; }
+
+    if(cat === "lifecycle"){
+      var a = (typeof LC !== "undefined") && LC[age];
+      if(!a) return rows;
+      /* All 10 PFMs offer all 4 LC variants — one row per PFM.
+         Sub-label lists the available variants for this age group. */
+      PFM.forEach(function(pfm){
+        var variants = ["lc-75","blc","lc-50","lc-25"].map(function(k){
+          return a[k] ? a[k].n.replace(/\s*\(.*?\)/,'') : k;  // strip "(Aggressive)" suffix
+        }).join(" · ");
+        /* Pick the default (BLC / balanced) allocation for the metrics seed. */
+        var def = a["blc"] || a["lc-50"] || a["lc-75"];
+        rows.push({
+          name:       displayName(pfm.id),
+          sub:        variants,
+          pfmId:      pfm.id,
+          pfmFull:    pfm.name,
+          schemeName: "Lifecycle Fund (" + age + ")",
+          risk:       "Auto Choice",
+          riskCls:    "balanced",
+          assetClass: "Lifecycle Auto Choice",
+          tier:       "Tier I / Tier II",
+          eq:         def ? def.E : 50,
+          E: def ? def.E+"%" : "—", C: def ? def.C+"%" : "—", G: def ? def.G+"%" : "—"
+        });
+      });
+
+    } else if(cat === "msf"){
+      /* Each MSF scheme is tied to exactly one PFM — use that as the row key. */
+      ["aggressive","high-growth","balanced","conservative","debt"].forEach(function(tier){
+        var d = (typeof MSF !== "undefined") && MSF[tier];
+        if(!d || !d.schemes || !d.schemes.length) return;
+        d.schemes.forEach(function(s){
+          rows.push({
+            name:       displayName(s.pid) || s.pfm,
+            sub:        s.n,                    // "Secure Retirement Equity Scheme"
+            pfmId:      s.pid,
+            pfmFull:    (PFM.find(function(p){ return p.id===s.pid; }) || {}).name || s.pfm,
+            schemeName: s.n,
+            risk:       d.risk,
+            riskCls:    d.riskCls,
+            assetClass: "MSF — " + d.title,
+            tier:       "Tier I",
+            eq:         parseInt(s.E, 10) || 0,
+            E: s.E, C: s.C, G: s.G
+          });
+        });
+      });
+
+    } else if(cat === "active"){
+      /* All 10 PFMs support Active Choice — one row per PFM. */
+      PFM.forEach(function(pfm){
+        rows.push({
+          name:       displayName(pfm.id),
+          sub:        "Active Choice · E up to 75% · Any C/G split",
+          pfmId:      pfm.id,
+          pfmFull:    pfm.name,
+          schemeName: "Active Choice",
+          risk:       "Custom Allocation",
+          riskCls:    "balanced",
+          assetClass: "Active Choice",
+          tier:       "Tier I / Tier II",
+          eq:         50,
+          E: "0–75%", C: "0–100%", G: "0–100%"
+        });
+      });
+
+    } else if(cat === "4a"){
+      /* Both 4A schemes (Vatsalya + Swasthya) are available with all 10 PFMs.
+         Show one row per PFM; sub-label lists both schemes. */
+      PFM.forEach(function(pfm){
+        rows.push({
+          name:       displayName(pfm.id),
+          sub:        "NPS Vatsalya · NPS Swasthya",
+          pfmId:      pfm.id,
+          pfmFull:    pfm.name,
+          schemeName: "4A Special Scheme",
+          risk:       "Manager Discretion",
+          riskCls:    "conservative",
+          assetClass: "Special Purpose (4A)",
+          tier:       "Tier I",
+          eq:         40,
+          E: "Managed", C: "Managed", G: "Managed"
+        });
+      });
+    }
+
+    /* Enrich every row with metrics (keyed on pfmId+schemeName for stability)
+       and generate the tag sub-line from the actual PFM registry fields. */
+    rows.forEach(function(r){
+      var pfmEntry = PFM.find(function(p){ return p.id === r.pfmId; }) || {};
+      r.tags = [pfmEntry.short || r.pfmId, "Tier I", "Tier II", "E · C · G"];
+      r.m = metricsFor((r.pfmId || "") + ":" + (r.schemeName || ""), r.eq);
+    });
+    return rows;
+  }
+
+  var CAT_LABEL = {
+    lifecycle: "Lifecycle-Based Funds (27 results)",
+    msf: "MSF Scheme Funds (16 results)",
+    active: "Active Choice Funds (10 results)",
+    "4a": "4A Special Scheme Funds (10 results)"
+  };
+
+  function buildTable(cat){
+    var wrap = $g("relWrap"), body = $g("relBody");
+    if(!wrap || !body) return;
+    var age = (typeof S !== "undefined" && S.age) ? S.age : "";
+    var rows = rowsForCategory(cat, age);
+
+    $g("relTitle").textContent = (CAT_LABEL[cat] || "Pension Funds");
+    $g("relSub").textContent = "Click any pension fund to view its performance and details.";
+    $g("relFoot").textContent = rows.length + " result(s) · NAV as on 03-Aug-2026 · Returns are indicative based on category and fund.";
+
+    if(!rows.length){
+      body.innerHTML = '<tr><td colspan="6" style="padding:20px;color:var(--text-m);font-weight:600;">' +
+        'No pension funds available under this category.</td></tr>';
+      wrap.classList.add("rel-open");
+      return;
+    }
+
+    body.innerHTML = rows.map(function(r, i){
+      /* Sub-label: scheme name for MSF; variant list for lifecycle/active/4A */
+      var subHtml = r.sub
+        ? '<div class="rel-sub-lbl">' + r.sub + '</div>'
+        : '';
+      return '<tr tabindex="0" role="button" data-i="' + i + '">' +
+        '<td><span class="rel-fund">' + r.name + '</span>' + subHtml + '</td>' +
+        '<td class="rel-risk">' + r.risk + '</td>' +
+        '<td class="rel-num rel-nav">\u20B9' + r.m.nav.toFixed(4) + '</td>' +
+        '<td class="rel-num">' + pctCell(r.m.oneY) + '</td>' +
+        '<td class="rel-num">' + pctCell(r.m.threeY) + '</td>' +
+        '<td class="rel-num">' + pctCell(r.m.fiveY) + '</td></tr>';
+    }).join("");
+
+    body.querySelectorAll("tr[data-i]").forEach(function(tr){
+      var idx = +tr.getAttribute("data-i");
+      var open = function(){ openInsights(rows[idx]); };
+      tr.addEventListener("click", open);
+      tr.addEventListener("keydown", function(e){
+        if(e.key === "Enter" || e.key === " "){ e.preventDefault(); open(); }
+      });
+    });
+
+    wrap.classList.add("rel-open");
+  }
+
+  function hideTable(){
+    var wrap = $g("relWrap");
+    if(wrap) wrap.classList.remove("rel-open");
+  }
+
+  function setText(id, txt){ var el = $g(id); if(el) el.textContent = txt; }
+
+  /* Fill the left fund-detail card from the row's metrics. */
+  function fillFundDetail(row){
+    var m = row.m || {};
+
+    /* Large headline = PFM name (e.g. "HDFC Pension Fund") */
+    setText("fdName", row.name);
+
+    /* Scheme sub-label just below the headline */
+    var fdSchemeEl = $g("fdSchemeSub");
+    if(fdSchemeEl){ fdSchemeEl.textContent = row.schemeName || row.sub || ""; }
+
+    setText("fdNavLbl", "NAV AS ON 03-AUG-2026");
+    setText("fdNavVal", "\u20B9" + (m.nav != null ? m.nav.toFixed(2) : "\u2014"));
+
+    var chip = $g("fdNavChip");
+    if(chip){
+      var chg = m.dayChange || 0;
+      chip.classList.toggle("down", chg < 0);
+      chip.innerHTML = (chg >= 0 ? "\u25B2 " : "\u25BC ") + Math.abs(chg).toFixed(2) + "%";
+    }
+    var aum = $g("fdAum");
+    if(aum){ aum.childNodes[0].nodeValue = m.aumLabel || "\u2014"; }
+    var inc = $g("fdInception");
+    if(inc){ inc.childNodes[0].nodeValue = m.inception || "\u2014"; }
+    var asset = $g("fdAsset");
+    if(asset){ asset.childNodes[0].nodeValue = row.assetClass || "NPS Category"; }
+    var tier = $g("fdTier");
+    if(tier){ tier.childNodes[0].nodeValue = row.tier || "Tier I"; }
+  }
+
+  /* Tab switcher: show the matching fd-panel, hide the others. */
+  var TAB_PANEL = { performance: "fdPanelPerf", sectors: "fdPanelSectors", peers: "fdPanelPeers" };
+  function showTab(tab){
+    var tabs = document.querySelectorAll("#fdTabs .fd-tab");
+    tabs.forEach(function(t){ t.classList.toggle("on", t.getAttribute("data-tab") === tab); });
+    Object.keys(TAB_PANEL).forEach(function(key){
+      var panel = $g(TAB_PANEL[key]);
+      if(panel) panel.style.display = (key === tab) ? "" : "none";
+    });
+    if(tab === "performance"){
+      setTimeout(function(){ window.SchemeInsights && window.SchemeInsights.resize && window.SchemeInsights.resize(); }, 30);
+    }
+  }
+
+  /* ---- Route to the Scheme Insights "separate page" ---- */
+  function openInsights(row){
+    if(!row) return;
+    document.body.classList.add("s5-page-mode");
+    var wrap = $g("s5Wrap");
+    if(wrap) wrap.classList.add("s5-open");
+
+    fillFundDetail(row);
+
+    if(window.SchemeInsights && typeof window.SchemeInsights.applyScheme === "function"){
+      /* Pass the full "Fund Name — Scheme" label to the insights analytics. */
+      var insightsLabel = row.schemeName
+        ? row.name + " \u2014 " + row.schemeName
+        : row.name;
+      window.SchemeInsights.applyScheme({
+        name: insightsLabel,
+        sectors: sectorsFor(row.eq),
+        peer: { ret: "\u20B9" + Math.round(10000 * (1 + row.m.oneY / 100)).toLocaleString("en-IN"),
+                aum: row.m.aumLabel }
+      });
+    }
+    showTab("performance");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function closeInsights(){
+    document.body.classList.remove("s5-page-mode");
+    var wrap = $g("s5Wrap");
+    if(wrap) wrap.classList.remove("s5-open");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function init(){
+    // (1) When a category card is clicked, build the relevant schemes table.
+    document.querySelectorAll(".cc").forEach(function(card){
+      card.addEventListener("click", function(){
+        // selCat() (Step 2 logic) has already run for state; read S.cat after it.
+        var cat = card.getAttribute("data-cat");
+        buildTable(cat);
+      });
+    });
+
+    // (2) Rebuild/hide the table when age changes (invalidates category pick).
+    var age = $g("selAge");
+    if(age){ age.addEventListener("change", hideTable); }
+
+    // (3) Cancel resets everything -> hide table + exit page mode.
+    var cancel = $g("btnX");
+    if(cancel){ cancel.addEventListener("click", function(){ hideTable(); closeInsights(); }); }
+
+    // (4) Back button returns from the insights page to the selection view.
+    var back = $g("s5Back");
+    if(back){ back.addEventListener("click", closeInsights); }
+
+    // (5) Fund-detail tab switcher.
+    document.querySelectorAll("#fdTabs .fd-tab").forEach(function(t){
+      t.addEventListener("click", function(){ showTab(t.getAttribute("data-tab")); });
+    });
+
+    // (6) Invest Now (detail card) mirrors the footer proceed action.
+    var invest = $g("fdInvest");
+    if(invest){
+      invest.addEventListener("click", function(){
+        var go = $g("btnGo");
+        if(go && !go.disabled){ go.click(); }
+        else { alert("Fund selected. Complete your fund-manager selection to proceed to invest."); }
+      });
+    }
   }
 
   if(document.readyState === "loading"){
